@@ -2,11 +2,10 @@ import tkinter as tk
 from tkinter.ttk import *
 from database import *
 import database
-from NEA import qNumber
 from typing import Dict, List, Optional
 
 myDb = database.Database("NEAdatabase.db")
-
+qNumber = 1
 
 class NEAprogram(tk.Frame):
     
@@ -57,7 +56,7 @@ class NEAprogram(tk.Frame):
         def print_selection():
             radioValue = var.get()
             myDb.insert_answer(qNumber, radioValue)
-            next_question()
+            qNumber += 1
             # radioLabel.config(text=f'you have selected {radioValue}')
  
         StrongDis = tk.Radiobutton(self, text='Strongly Disagree', variable=var, value=-4, command=print_selection)
@@ -77,6 +76,9 @@ class NEAprogram(tk.Frame):
 
 
     def create_buttons(self):
+        def prev_question():
+            qNumber -= 1
+        
         PrevButton = tk.Button(self, text='Next', command=prev_question)
         PrevButton.pack()
 
