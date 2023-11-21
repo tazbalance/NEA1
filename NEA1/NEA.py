@@ -3,6 +3,14 @@ import database
 import interface
 
 myDb = database.Database("NEAdatabase.db")
+qNumber = 1
+
+def prev_question():
+    qNumber -= 1
+
+def next_question():
+    qNumber += 1
+
 
 # Defining MBTI, Enneagram and Big Five
 
