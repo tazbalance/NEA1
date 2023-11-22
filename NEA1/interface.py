@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter.ttk import *
+from NEA import *
 from database import *
 import database
 from typing import Dict, List, Optional
@@ -60,30 +61,31 @@ class NEAprogram(tk.Frame):
 
         global var
         var = tk.IntVar()
- 
+
         def next_question():
             
             global qNumber
             if qNumber < 13:
                 radioValue = var.get()
-                myDb.insert_answer(qNumber, radioValue)
+                myDb.insert_answer(radioValue, qNumber)
                 qNumber += 1
                 var.set(None)
                 self.update_label_widgets(qNumber)
                 if qNumber == 2:
                     self.create_prev_button()
             else:
-                self.lbls["Question"].config(text="finished")
+                for button in options_list:
+                    button.grid_forget()
+                self.finish_questions()
 
-        values = {"Strongly Disagree": 1,
-          "Disagree": 2,
-          "Neutral": 3,
-          "Agree": 4,
-          "Strongly Agree": 5}
+        options = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree']
+        options_list = []
 
-        for (text, value) in values.items():
-            tk.Radiobutton(self.frms["entry"], text=text, variable=var, value=value, command=next_question).grid(column=0, padx=50, sticky=tk.W)
-        
+        for num,text in enumerate(options):
+            rb = tk.Radiobutton(self.frms["entry"], text=text, variable=var, value=num, command=next_question)
+            rb.grid(column=0, padx=50, sticky=tk.W)
+            options_list.append(rb)        
+
 
     def create_prev_button(self):
         def prev_question():
@@ -97,8 +99,26 @@ class NEAprogram(tk.Frame):
                 PrevButton.grid_remove()
             self.update_label_widgets(qNumber)
 
+        global PrevButton
         PrevButton = tk.Button(self.frms["entry"], text='Previous', command=prev_question)
-        PrevButton.grid(column=0, row=6, padx=5, pady=5, sticky=tk.W)
+        PrevButton.grid(column=0, padx=5, pady=5, sticky=tk.W)
+        
+
+    def finish_questions(self):
+        self.lbls["Question"].config(text="Results:")
+        global PrevButton
+        PrevButton.grid_remove()
+        
+        types = get_types()
+        MBTI = types[0]
+        Enneagram = types[1]
+        BigFive = types[2]
+            
+        results = [f'MBTI: {MBTI}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
+        
+        for text in results:
+            lbl = tk.Label(self.frms["entry"], text=text)
+            lbl.grid(column=0, padx=5, sticky=tk.W)
 
 
 def run():

@@ -4,38 +4,6 @@ import interface
 
 myDb = database.Database("NEAdatabase.db")
 
-# Defining MBTI, Enneagram and Big Five
-
-Si = 0
-Se = 0
-Ni = 0
-Ne = 0
-Fe = 0
-Fi = 0
-Ti = 0
-Te = 0
-
-One = 0
-Two = 0
-Three = 0
-Four = 0
-Five = 0
-Six = 0
-Seven = 0
-Eight = 0
-Nine = 0
-
-Reserved = 0
-Social = 0
-Limbic = 0
-Calm = 0
-Unstructured = 0
-Organised = 0
-Egocentric = 0
-Accomodating = 0
-Noncurious = 0
-Inquisitive = 0
-
 """
 # Assigning answers to each question
 
@@ -44,9 +12,41 @@ for i in range(13):
     myDb.insert_answer(answer,i+1)
 """
 
-# Adding MBTI results together
+def get_types():
 
-def get_answers():
+    # Defining MBTI, Enneagram and Big Five
+
+    Si = 0
+    Se = 0
+    Ni = 0
+    Ne = 0
+    Fe = 0
+    Fi = 0
+    Ti = 0
+    Te = 0
+
+    One = 0
+    Two = 0
+    Three = 0
+    Four = 0
+    Five = 0
+    Six = 0
+    Seven = 0
+    Eight = 0
+    Nine = 0
+
+    Reserved = 0
+    Social = 0
+    Limbic = 0
+    Calm = 0
+    Unstructured = 0
+    Organised = 0
+    Egocentric = 0
+    Accomodating = 0
+    Noncurious = 0
+    Inquisitive = 0
+
+    # Adding MBTI results together
 
     for i in range(13):
         answers = myDb.get_answers(i+1)
@@ -115,9 +115,6 @@ def get_answers():
         elif BigFive == 'I':
             Inquisitive += answers[0][3]
 
-
-def calculate_types():
-
     # Calculating MBTI
     # Quadra
 
@@ -128,8 +125,6 @@ def calculate_types():
 
     Quadra = {'SiNeTiFe': SiNeTiFe, 'SeNiTiFe': SeNiTiFe, 'SiNeTeFi': SiNeTeFi, 'SeNiTeFi': SeNiTeFi}
     HighestQuadra = max(Quadra, key=Quadra.get)
-    print(HighestQuadra)
-
 
     if HighestQuadra == 'SiNeTiFe':
         # SI NE TI FE
@@ -142,12 +137,10 @@ def calculate_types():
 
         if HighestPJ == 'Perceiving':
             DomInf = {'ISFJ': Si, 'ENTP': Ne}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
+            HighestMBTI = max(DomInf, key=DomInf.get)
         elif HighestPJ == 'Judging':
             DomInf = {'ESFJ': Fe, 'INTP': Ti}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
+            HighestMBTI = max(DomInf, key=DomInf.get)
 
 
     elif HighestQuadra == 'SeNiTiFe':
@@ -161,12 +154,10 @@ def calculate_types():
 
         if HighestPJ == 'Perceiving':
             DomInf = {'ESTP': Se, 'INFJ': Ni}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
+            HighestMBTI = max(DomInf, key=DomInf.get)
         elif HighestPJ == 'Judging':
             DomInf = {'ISTP': Ti, 'ENFJ': Fe}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
+            HighestMBTI = max(DomInf, key=DomInf.get)
 
 
     elif HighestQuadra == 'SiNeTeFi':
@@ -180,12 +171,10 @@ def calculate_types():
 
         if HighestPJ == 'Perceiving':
             DomInf = {'ISTJ': Si, 'ENFP': Ne}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
+            HighestMBTI = max(DomInf, key=DomInf.get)
         elif HighestPJ == 'Judging':
             DomInf = {'ESTJ': Te, 'INFP': Fi}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
+            HighestMBTI = max(DomInf, key=DomInf.get)
 
 
     elif HighestQuadra == 'SeNiTeFi':
@@ -199,15 +188,10 @@ def calculate_types():
 
         if HighestPJ == 'Perceiving':
             DomInf = {'ESFP': Se, 'INTJ': Ni}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
+            HighestMBTI = max(DomInf, key=DomInf.get)
         elif HighestPJ == 'Judging':
             DomInf = {'ISFP': Fi, 'ENTJ': Te}
-            FinalType = max(DomInf, key=DomInf.get)
-            print(FinalType)
-
-    print(f"Si: {Si}, Se: {Se}, Ne: {Ne}, Ni: {Ni}, Fi: {Fi}, Fe: {Fe}, Ti: {Ti}, Te: {Te}")
-
+            HighestMBTI = max(DomInf, key=DomInf.get)
 
 
     # Calculating Enneagram
@@ -238,9 +222,6 @@ def calculate_types():
 
     HighestWing = max(Wings, key=Wings.get)
     HighestEnnea += HighestWing
-
-
-    print(HighestEnnea)
 
 
     # Calculating BigFive
@@ -284,5 +265,5 @@ def calculate_types():
     else:
         BigFive += 'N'
 
-    print(BigFive)
+    return HighestMBTI, HighestEnnea, BigFive
 
