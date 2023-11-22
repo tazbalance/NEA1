@@ -14,7 +14,7 @@ class Database():
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        query = f"SELECT Question FROM Questions WHERE QuestionNumber = {number}"
+        query = f"SELECT Question FROM Questions WHERE QuestionNumber = {number};"
         cur.execute(query)
         result = cur.fetchone()
 
@@ -36,7 +36,7 @@ class Database():
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        query = f"SELECT MBTI, Enneagram, BigFive, Answer FROM Questions WHERE QuestionNumber = {number}"
+        query = f"SELECT MBTI, Enneagram, BigFive, Answer FROM Questions WHERE QuestionNumber = {number};"
         cur.execute(query)
         results = cur.fetchall()
 
