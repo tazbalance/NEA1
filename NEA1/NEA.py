@@ -1,16 +1,7 @@
-import random
 import database
 import interface
 
 myDb = database.Database("NEAdatabase.db")
-
-"""
-# Assigning answers to each question
-
-for i in range(13):
-    answer = random.randint(-4,4)
-    myDb.insert_answer(answer,i+1)
-"""
 
 def get_types():
 

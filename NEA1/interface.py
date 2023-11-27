@@ -9,7 +9,7 @@ global qNumber
 qNumber = 1
 myDb = database.Database("NEAdatabase.db")
 
-class NEAprogram(tk.Frame):
+class NEAquiz(tk.Frame):
     
     def __init__(self, parent, *args, **kwargs):
         
@@ -121,11 +121,60 @@ class NEAprogram(tk.Frame):
             lbl.grid(column=0, padx=5, sticky=tk.W)
 
 
+
+
+class NEAselection(tk.Frame):
+    
+    def __init__(self, parent, *args, **kwargs):
+        
+
+        tk.Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+        parent.minsize(width=450, height=200)
+
+        self.db = Database("NEAdatabase.db")
+
+        self.frms: Dict[str, tk.Frame] = {}
+        self.lbls: Dict[str, tk.Label] = {}
+        self.ents: Dict[str, tk.Entry] = {}
+        self.btns: Dict[str, tk.Button] = {}
+        self.rbtns: Dict[str, tk.Radiobutton] = {}
+
+        self.create_frames()
+        self.create_label_widgets(qNumber)
+
+    def create_frames(self):
+        
+        self.frms["parent"] = tk.Frame(self.parent)
+        self.frms["parent"].grid(sticky=tk.W)
+
+        self.frms["entry"] = tk.Frame(self.frms["parent"])
+        self.frms["entry"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
+
+
+    def create_label_widgets(self, qNumber):
+
+        Questions = myDb.get_questions(qNumber)
+        Question = Questions[0]
+
+        self.lbls["Question"] = tk.Label(self.frms["entry"], text=Question)
+        self.lbls["Question"].grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+
+        """
 def run():
     root = tk.Tk()
     root.geometry("450x200")
-    NEAprogram(root).grid()
+    NEAselection(root).grid()
+    root.mainloop()"""
+
+def runQuiz():
+    root = tk.Tk()
+    root.geometry("450x200")
+    NEAquiz(root).grid()
     root.mainloop()
 
+# run()
 
-run()
+
+
+runQuiz()
