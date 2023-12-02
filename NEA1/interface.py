@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter.ttk import *
-from NEA import *
+from NEA import get_types
 from database import *
 import database
+from webscraping import *
 from typing import Dict, List, Optional
 
 global qNumber
@@ -122,7 +123,6 @@ class NEAquiz(tk.Frame):
 
 
 
-
 class NEAselection(tk.Frame):
     
     def __init__(self, parent, *args, **kwargs):
@@ -141,7 +141,8 @@ class NEAselection(tk.Frame):
         self.rbtns: Dict[str, tk.Radiobutton] = {}
 
         self.create_frames()
-        self.create_label_widgets(qNumber)
+        self.create_label_widgets()
+        self.create_buttons()
 
     def create_frames(self):
         
@@ -152,20 +153,29 @@ class NEAselection(tk.Frame):
         self.frms["entry"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
 
-    def create_label_widgets(self, qNumber):
+    def create_label_widgets(self):
 
-        Questions = myDb.get_questions(qNumber)
-        Question = Questions[0]
+        text = printText()
 
-        self.lbls["Question"] = tk.Label(self.frms["entry"], text=Question)
+        self.lbls["Question"] = tk.Label(self.frms["entry"], text=text)
         self.lbls["Question"].grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
-        """
+
+    def create_buttons(self):
+
+        def destroy_window():
+            return 0
+
+        self.btns["Quiz"] = tk.Button(self.frms["entry"], text='Finished', command=destroy_window)
+        self.btns["Quiz"].grid(column=0, padx=5, pady=5, sticky=tk.W)
+
+        
 def run():
     root = tk.Tk()
     root.geometry("450x200")
     NEAselection(root).grid()
-    root.mainloop()"""
+    root.mainloop()
+
 
 def runQuiz():
     root = tk.Tk()
@@ -173,8 +183,7 @@ def runQuiz():
     NEAquiz(root).grid()
     root.mainloop()
 
-# run()
 
-
+run()
 
 runQuiz()

@@ -1,5 +1,4 @@
 import database
-import interface
 
 myDb = database.Database("NEAdatabase.db")
 
