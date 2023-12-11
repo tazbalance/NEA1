@@ -1,3 +1,4 @@
+from gettext import find
 import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
@@ -7,7 +8,7 @@ from PIL import Image, ImageTk
 import urllib.request
 
 from NEA import get_types
-from webscraping import *
+from webscraping import find_types
 from database import *
 import database
 
@@ -50,6 +51,10 @@ class NEAselection(tk.Frame):
 
 
     def create_labels(self):
+        text = find_types()
+        self.lbls["Question"] = tk.Label(self.frms["entry"], text=text)
+        self.lbls["Question"].grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+        
         image_list = [['Batman', 'https://static1.personality-database.com/profile_images/79843d9575884e8d8bec216709f82464.png'],
                       ['Superman', 'https://static1.personality-database.com/profile_images/52eab3736f274e819b56274ed64ed6c6.png'],
                       ['Spider-Man', 'https://static1.personality-database.com/profile_images/12a8e090cb17461b9c40adf614255124.png']]
