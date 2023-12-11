@@ -1,6 +1,6 @@
 import database
 
-myDb = database.Database("NEAdatabase.db")
+myDb = database.Database()
 
 def get_types():
 

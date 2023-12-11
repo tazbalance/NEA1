@@ -1,17 +1,18 @@
+from pathlib import Path
 import sqlite3
 
 
 class Database():
 
-    def __init__(self, path):
-        self.path = path
+    def __init__(self):
+        self.path = Path(__file__).with_name('NEAdatabase.db')
 
 
     def get_amount_of_questions(self):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        query = "Select QuestionNumber FROM Questions ORDER BY QuestionNumber DESC;"
+        query = "SELECT QuestionNumber FROM Questions ORDER BY QuestionNumber DESC;"
         cur.execute(query)
         result = cur.fetchone()
 
