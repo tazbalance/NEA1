@@ -8,21 +8,31 @@ class Database():
         self.path = Path(__file__).with_name('NEAcharacterDB.db')
 
 
-    def insert_character(self, name, series, image):
+    def delete_table(self):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        query = f'INSERT INTO Characters (Name, Series, Image) VALUES ("{name}", "{series}", "{image}");'
+        query = f"DELETE FROM Characters;"
         cur.execute(query)
 
         conn.commit()
 
 
-    def get_character_info(self, number):
+    def insert_character(self, id, name, series, image):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        query = f"SELECT Name, Series, Image FROM Characters WHERE CharacterID = {number};"
+        query = f"INSERT INTO Characters (ID, Name, Series, Image) VALUES ('{id}', '{name}', '{series}', '{image}');"
+        cur.execute(query)
+
+        conn.commit()
+
+
+    def get_character_info(self, id):
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+
+        query = f'SELECT Name, Series, Image FROM Characters WHERE ID = {id};'
         cur.execute(query)
         results = cur.fetchall()
 

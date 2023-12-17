@@ -1,4 +1,3 @@
-from gettext import find
 import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
@@ -6,16 +5,18 @@ from tkinter.ttk import *
 from typing import Dict
 from PIL import Image, ImageTk
 import urllib.request
+import os
 
 from NEA import get_types
-from webscraping import find_types
-from database import *
 import database
+import databaseChars
+from webscraping import ids
 
 
 global qNumber
 qNumber = 1
 myDb = database.Database()
+myCharDb = databaseChars.Database()
 
 
 class NEAselection(tk.Frame):
@@ -26,16 +27,13 @@ class NEAselection(tk.Frame):
         self.parent = parent
         parent.minsize(width=450, height=400)
 
-        self.db = Database()
+        self.db = myCharDb
 
         self.wgts: Dict[str] = {}
-        self.imgs: Dict[str] = {}
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
-        self.ents: Dict[str, tk.Entry] = {}
         self.btns: Dict[str, tk.Button] = {}
-        self.rbtn: Dict[str, tk.Radiobutton] = {}
 
         self.create_frames()
         self.create_labels()
@@ -46,37 +44,11 @@ class NEAselection(tk.Frame):
         self.frms["parent"] = tk.Frame(self.parent)
         self.frms["parent"].grid(sticky=tk.W)
 
-        self.frms["entry"] = tk.Frame(self.frms["parent"])
-        self.frms["entry"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
+        self.frms["frame"] = tk.Frame(self.frms["parent"])
+        self.frms["frame"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
 
-    def create_labels(self):        
-        image_list = [['Batman', 'https://static1.personality-database.com/profile_images/79843d9575884e8d8bec216709f82464.png'],
-                      ['Superman', 'https://static1.personality-database.com/profile_images/52eab3736f274e819b56274ed64ed6c6.png'],
-                      ['Spider-Man', 'https://static1.personality-database.com/profile_images/12a8e090cb17461b9c40adf614255124.png']]
-
-        for image in image_list:
-            filename = f'Images{image[0]}.png'
-            
-            urllib.request.urlretrieve(image[1], filename)
-            img = Image.open(filename)
-            img = img.resize((75, 75))
-            img.save(filename)
-            img = ImageTk.PhotoImage(img)
-            
-            self.imgs[image[0]] = img
-
-        character_lists = []
-        character_list = [['Batman', 'DC Comics', self.imgs['Batman']],
-                          ['Superman', 'DC Comics', self.imgs['Superman']],
-                          ['Spider-Man', 'Marvel Comics', self.imgs['Spider-Man']]]
-
-        for item in character_list:
-            char_list = []
-            char_list.append(item[0])
-            char_list.append(item[1])
-            char_list.append(item[2])
-            character_lists.append(char_list)
+    def create_labels(self):
 
         def deselect_character(name):
             for i in range(len(self.wgts[name])):
@@ -88,38 +60,46 @@ class NEAselection(tk.Frame):
                 self.wgts[name][i].config(bg='#666666')
             self.btns[name].config(text='Deselect', command=lambda n=name:deselect_character(n))
 
-        for num, item in enumerate(character_lists):
-            name = item[0]
-            series = item[1]
-            pic = item[2]
+        for id in ids:
+            char_info = myCharDb.get_character_info(id)[0]
 
-            self.frms[name] = tk.Frame(self.frms["entry"], bg='#cccccc')
-            self.frms[name].grid(row=num, column=0, columnspan=50, pady=5, sticky=tk.W)
+            name = char_info[0]
+            series = char_info[1]
+            image = char_info[2]
+
+            urllib.request.urlretrieve(image, f'{id}.png')
+            img = Image.open(f'{id}.png')
+            img = img.resize((75, 75))
+            img = ImageTk.PhotoImage(img)
+            os.remove(f'{id}.png')
+
+            self.frms[name] = tk.Frame(self.frms["frame"], bg='#cccccc')
+            self.frms[name].grid(row=id, column=0, columnspan=50, pady=5, sticky=tk.W)
             self.frms[name].config(height=90, width=350)
             self.frms[name].grid_propagate(0)
 
-            self.frms[f'{name} Button'] = tk.Frame(self.frms["entry"], bg='#cccccc')
-            self.frms[f'{name} Button'].grid(row=num, column=51, pady=5, sticky=tk.W)
+            self.frms[f'{name} Button'] = tk.Frame(self.frms["frame"], bg='#cccccc')
+            self.frms[f'{name} Button'].grid(row=id, column=51, pady=5, sticky=tk.W)
             self.frms[f'{name} Button'].config(height=90, width=65)
             self.frms[f'{name} Button'].grid_propagate(0)
 
-            self.lbls[f'{name} Picture'] = tk.Label(self.frms[name], image=pic, bg='#cccccc')
-            self.lbls[f'{name} Picture'].grid(row=num, rowspan=2, column=0, padx=5, pady=5, sticky=tk.W)
-            self.lbls[f'{name} Picture'].image=pic
+            self.lbls[f'{name} Picture'] = tk.Label(self.frms[name], image=img, bg='#cccccc')
+            self.lbls[f'{name} Picture'].grid(row=id, rowspan=2, column=0, padx=5, pady=5, sticky=tk.W)
+            self.lbls[f'{name} Picture'].image=img
 
-            self.lbls[name] = tk.Label(self.frms[name], text=name, font=('Helvetica', 18), bg='#cccccc')
-            self.lbls[name].grid(row=num, column=1, padx=5, sticky=tk.W)
+            self.lbls[f'{name} Label'] = tk.Label(self.frms[name], text=name, font=('Helvetica', 12), bg='#cccccc')
+            self.lbls[f'{name} Label'].grid(row=id, column=1, padx=5, sticky=tk.W)
 
             self.lbls[f'{name} Series'] = tk.Label(self.frms[name], text=series, bg='#cccccc')
-            self.lbls[f'{name} Series'].grid(row=num+1, column=1, padx=5, sticky=tk.W)
+            self.lbls[f'{name} Series'].grid(row=id+1, column=1, padx=5, sticky=tk.W)
 
             self.btns[name] = tk.Button(self.frms[f'{name} Button'], text='Select', height=4, command=lambda n=name:select_character(n))
-            self.btns[name].grid(row=num, rowspan=2, column=2, pady=10, sticky=tk.E)
+            self.btns[name].grid(row=id, rowspan=2, column=2, pady=10, sticky=tk.E)
 
             self.wgts[name] = [self.frms[name],
                                self.frms[f'{name} Button'],
                                self.lbls[f'{name} Picture'],
-                               self.lbls[name],
+                               self.lbls[f'{name} Label'],
                                self.lbls[f'{name} Series']]
 
 
@@ -128,7 +108,7 @@ class NEAselection(tk.Frame):
             global root
             root.destroy()
 
-        self.btns["Quiz"] = tk.Button(self.frms["entry"], text='Finished', command=destroy_window)
+        self.btns["Quiz"] = tk.Button(self.frms["frame"], text='Finished', command=destroy_window)
         self.btns["Quiz"].grid(column=0, padx=5, pady=5, sticky=tk.W)
 
 
@@ -141,11 +121,10 @@ class NEAquiz(tk.Frame):
         self.parent = parent
         parent.minsize(width=450, height=200)
 
-        self.db = Database()
+        self.db = myDb
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
-        self.ents: Dict[str, tk.Entry] = {}
         self.btns: Dict[str, tk.Button] = {}
         self.rbtn: Dict[str, tk.Radiobutton] = {}
 
@@ -158,8 +137,8 @@ class NEAquiz(tk.Frame):
         self.frms["parent"] = tk.Frame(self.parent)
         self.frms["parent"].grid(sticky=tk.W)
 
-        self.frms["entry"] = tk.Frame(self.frms["parent"])
-        self.frms["entry"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
+        self.frms["frame"] = tk.Frame(self.frms["parent"])
+        self.frms["frame"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
         self.frms["finished"] = tk.Frame(self.frms["parent"])
         self.frms["finished"].grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
@@ -169,7 +148,7 @@ class NEAquiz(tk.Frame):
         Questions = myDb.get_questions(qNumber)
         Question = Questions[0]
 
-        self.lbls["Question"] = tk.Label(self.frms["entry"], text=Question)
+        self.lbls["Question"] = tk.Label(self.frms["frame"], text=Question)
         self.lbls["Question"].grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
     
 
@@ -204,7 +183,7 @@ class NEAquiz(tk.Frame):
         options_list = []
 
         for num,text in enumerate(options):
-            rb = tk.Radiobutton(self.frms["entry"], text=text, variable=var, value=num, command=next_question)
+            rb = tk.Radiobutton(self.frms["frame"], text=text, variable=var, value=num, command=next_question)
             rb.grid(column=0, padx=50, sticky=tk.W)
             options_list.append(rb)        
 
@@ -221,7 +200,7 @@ class NEAquiz(tk.Frame):
                 self.btns["Previous"].grid_remove()
             self.update_labels(qNumber)
 
-        self.btns["Previous"] = tk.Button(self.frms["entry"], text='Previous', command=prev_question)
+        self.btns["Previous"] = tk.Button(self.frms["frame"], text='Previous', command=prev_question)
         self.btns["Previous"].grid(row=50, column=0, padx=5, pady=5, sticky=tk.W)
 
     
@@ -243,7 +222,7 @@ class NEAresults(tk.Frame):
         self.parent = parent
         parent.minsize(width=450, height=200)
 
-        self.db = Database()
+        self.db = myDb
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
@@ -256,25 +235,25 @@ class NEAresults(tk.Frame):
         self.frms["parent"] = tk.Frame(self.parent)
         self.frms["parent"].grid(sticky=tk.W)
 
-        self.frms["entry"] = tk.Frame(self.frms["parent"])
-        self.frms["entry"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
+        self.frms["frame"] = tk.Frame(self.frms["parent"])
+        self.frms["frame"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
     
     def create_labels(self):
-        label = tk.Label(self.frms["entry"], text='Results:')
+        label = tk.Label(self.frms["frame"], text='Results:')
         label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
         
-        label = tk.Label(self.frms["entry"])
+        label = tk.Label(self.frms["frame"])
         
         types = get_types()
-        MBTI = types[0]
+        MBTItype = types[0]
         Enneagram = types[1]
         BigFive = types[2]
             
-        results = [f'MBTI: {MBTI}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
+        results = [f'MBTI: {MBTItype}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
         
         for text in results:
-            lbl = tk.Label(self.frms["entry"], text=text)
+            lbl = tk.Label(self.frms["frame"], text=text)
             lbl.grid(column=0, padx=5, sticky=tk.W)
 
 
