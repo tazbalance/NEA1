@@ -8,6 +8,7 @@ import urllib.request
 import os
 
 from NEA import get_types
+from NEA1.NEA import get_char_types
 import database
 import databaseChars
 from webscraping import ids
@@ -30,6 +31,7 @@ class NEAselection(tk.Frame):
         self.db = myCharDb
 
         self.wgts: Dict[str] = {}
+        self.chrs = []
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
@@ -49,18 +51,19 @@ class NEAselection(tk.Frame):
 
 
     def create_labels(self):
-
-
-
         def deselect_character(name):
-            for i in range(len(self.wgts[name])):
-                self.wgts[name][i].config(bg='#cccccc')
+            for i in range(len(self.wgts[name])-1):
+                self.wgts[name][i+1].config(bg='#cccccc')
             self.btns[name].config(text='Select', command=lambda n=name:select_character(n))
+            id = self.wgts[name][0]
+            self.chrs.remove(id)
 
         def select_character(name):
-            for i in range(len(self.wgts[name])):
-                self.wgts[name][i].config(bg='#666666')
+            for i in range(len(self.wgts[name])-1):
+                self.wgts[name][i+1].config(bg='#666666')
             self.btns[name].config(text='Deselect', command=lambda n=name:deselect_character(n))
+            id = self.wgts[name][0]
+            self.chrs.append(id)
 
         for id in ids:
             char_info = myCharDb.get_character_info(id)[0]
@@ -80,10 +83,10 @@ class NEAselection(tk.Frame):
             self.frms[name].config(height=90, width=350)
             self.frms[name].grid_propagate(0)
 
-            self.frms[f'{name} Button'] = tk.Frame(self.frms["frame"], bg='#cccccc')
-            self.frms[f'{name} Button'].grid(row=id, column=51, pady=5, sticky=tk.W)
-            self.frms[f'{name} Button'].config(height=90, width=65)
-            self.frms[f'{name} Button'].grid_propagate(0)
+            self.frms[f'{name} Frame'] = tk.Frame(self.frms["frame"], bg='#cccccc')
+            self.frms[f'{name} Frame'].grid(row=id, column=51, pady=5, sticky=tk.W)
+            self.frms[f'{name} Frame'].config(height=90, width=65)
+            self.frms[f'{name} Frame'].grid_propagate(0)
 
             self.lbls[f'{name} Picture'] = tk.Label(self.frms[name], image=img, bg='#cccccc')
             self.lbls[f'{name} Picture'].grid(row=id, rowspan=2, column=0, padx=5, pady=5, sticky=tk.W)
@@ -95,11 +98,12 @@ class NEAselection(tk.Frame):
             self.lbls[f'{name} Series'] = tk.Label(self.frms[name], text=series, bg='#cccccc')
             self.lbls[f'{name} Series'].grid(row=id+1, column=1, padx=5, sticky=tk.W)
 
-            self.btns[name] = tk.Button(self.frms[f'{name} Button'], text='Select', height=4, command=lambda n=name:select_character(n))
+            self.btns[name] = tk.Button(self.frms[f'{name} Frame'], text='Select', height=4, value=id, command=lambda n=name:select_character(n))
             self.btns[name].grid(row=id, rowspan=2, column=2, pady=10, sticky=tk.E)
 
-            self.wgts[name] = [self.frms[name],
-                               self.frms[f'{name} Button'],
+            self.wgts[name] = [id,
+                               self.frms[name],
+                               self.frms[f'{name} Frame'],
                                self.lbls[f'{name} Picture'],
                                self.lbls[f'{name} Label'],
                                self.lbls[f'{name} Series']]
@@ -109,9 +113,13 @@ class NEAselection(tk.Frame):
         def destroy_window():
             global root
             root.destroy()
+        
+        for id in self.chrs:
+            get_char_types(id)
 
         self.btns["Quiz"] = tk.Button(self.frms["frame"], text='Finished', command=destroy_window)
         self.btns["Quiz"].grid(column=0, padx=5, pady=5, sticky=tk.W)
+
 
 
 

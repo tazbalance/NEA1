@@ -1,68 +1,45 @@
+from os import MFD_HUGE_64KB
 from webbrowser import get
 import database
 from webscraping import get_mbti_values
 import re
 
-myDb = database.Database()
 
-"""
+myDb = database.Database()
+MBTI = {'Si':0, 'Se':0, 'Ni':0, 'Ne':0,
+        'Fi':0, 'Fe':0, 'Ti':0, 'Te':0}
+
+
 def get_char_types(id):
-    
-    MBTI = {'Si':0, 'Se':0, 'Ni':0, 'Ne':0,
-            'Fi':0, 'Fe':0, 'Ti':0, 'Te':0}
 
     MBTIvalues = get_mbti_values(id)
 
-    MBTIlist = ['ISFJ', 'ESFJ', 'INTP', 'ENTP',
-                'ISTJ', 'ESTJ', 'INFP', 'ENFP',
-                'INFJ', 'ENFJ', 'ISTP', 'ESTP',
-                'INTJ', 'ENTJ', 'ISFP', 'ESFP']
+    MBTIlist = [['Si', 'Fe', 'Ti', 'Ne'], ['Fe', 'Si', 'Ne', 'Ti'], ['Ti', 'Ne', 'Si', 'Fe'], ['Ne', 'Ti', 'Fe', 'Si'],
+                ['Si', 'Te', 'Fi', 'Ne'], ['Te', 'Si', 'Ne', 'Fi'], ['Fi', 'Ne', 'Si', 'Te'], ['Ne', 'Fi', 'Te', 'Si'],
+                ['Ni', 'Fe', 'Ti', 'Se'], ['Fe', 'Ni', 'Se', 'Ti'], ['Ti', 'Se', 'Ni', 'Fe'], ['Se', 'Ti', 'Fe', 'Ni'],
+                ['Ni', 'Te', 'Fi', 'Se'], ['Te', 'Ni', 'Se', 'Fi'], ['Fi', 'Se', 'Ni', 'Te'], ['Se', 'Fi', 'Te', 'Ni']]
 
-    for mbti in MBTIlist:
-        
-        if bool(re.search('ISFJ', mbti)):
-            MBTI[ += 8, 
+    for CharMBTI, Function in zip(MBTIvalues.values(), MBTIlist):
+        MBTI[Function[0]] += 8 * CharMBTI
+        MBTI[Function[1]] += 4 * CharMBTI
+        MBTI[Function[2]] += 2 * CharMBTI
+        MBTI[Function[3]] += 1 * CharMBTI
 
-        MBTIvalues[mbti]
-
-    return None
-"""
 
 def get_types():
 
-    # Defining MBTI, Enneagram and Big Five
+    MBTI_list = {'Si':0, 'Se':0, 'Ni':0, 'Ne':0,
+                 'Fi':0, 'Fe':0, 'Ti':0, 'Te':0}
 
-    Si = 0
-    Se = 0
-    Ni = 0
-    Ne = 0
-    Fe = 0
-    Fi = 0
-    Ti = 0
-    Te = 0
+    Enneagram_list = {'1':0, '2':0, '3':0,
+                      '4':0, '5':0, '6':0,
+                      '7':0, '8':0, '9':0}
 
-    One = 0
-    Two = 0
-    Three = 0
-    Four = 0
-    Five = 0
-    Six = 0
-    Seven = 0
-    Eight = 0
-    Nine = 0
-
-    Reserved = 0
-    Social = 0
-    Limbic = 0
-    Calm = 0
-    Unstructured = 0
-    Organised = 0
-    Egocentric = 0
-    Accomodating = 0
-    Noncurious = 0
-    Inquisitive = 0
-
-    # Adding MBTI results together
+    BigFive_list = {'R':0, 'S':0,
+                    'L':0, 'C':0,
+                    'U':0, 'O':0,
+                    'E':0, 'A':0,
+                    'N':0, 'I':0}
 
     for i in range(13):
         answers = myDb.get_answers(i+1)
@@ -70,76 +47,20 @@ def get_types():
         Enneagram = answers[0][1]
         BigFive = answers[0][2]
 
-        if MBTI == 'Si':
-            Si += answers[0][3]
-        elif MBTI == 'Se':
-            Se += answers[0][3]
-        elif MBTI == 'Ni':
-            Ni += answers[0][3]
-        elif MBTI == 'Ne':
-            Ne += answers[0][3]
-        elif MBTI == 'Fi':
-            Fi += answers[0][3]
-        elif MBTI == 'Fe':
-            Fe += answers[0][3]
-        elif MBTI == 'Ti':
-            Ti += answers[0][3]
-        elif MBTI == 'Te':
-            Te += answers[0][3]
+        MBTI_list[MBTI] += answers[0][3]
+        Enneagram_list[Enneagram] += answers[0][3]
+        BigFive_list[BigFive] += answers[0][3]
 
-        # Adding Enneagram results together
+        HighestMBTI, HighestEnnea, HighestBigFive = calculate_types(MBTI_list, Enneagram_list, BigFive_list)
+        return HighestMBTI, HighestEnnea, HighestBigFive
 
-        if Enneagram == '1':
-            One += answers[0][3]
-        elif Enneagram == '2':
-            Two += answers[0][3]
-        elif Enneagram == '3':
-            Three += answers[0][3]
-        elif Enneagram == '4':
-            Four += answers[0][3]
-        elif Enneagram == '5':
-            Five += answers[0][3]
-        elif Enneagram == '6':
-            Six += answers[0][3]
-        elif Enneagram == '7':
-            Seven += answers[0][3]
-        elif Enneagram == '8':
-            Eight += answers[0][3]
-        elif Enneagram == '9':
-            Nine += answers[0][3]
 
-        # Adding Big Five results together
+def calculate_types(MBTI, Enneagram, BigFive):
 
-        if BigFive == 'R':
-            Reserved += answers[0][3]
-        elif BigFive == 'S':
-            Social += answers[0][3]
-        elif BigFive == 'L':
-            Limbic += answers[0][3]
-        elif BigFive == 'C':
-            Calm += answers[0][3]
-        elif BigFive == 'U':
-            Unstructured += answers[0][3]
-        elif BigFive == 'O':
-            Organised += answers[0][3]
-        elif BigFive == 'E':
-            Egocentric += answers[0][3]
-        elif BigFive == 'A':
-            Accomodating += answers[0][3]
-        elif BigFive == 'N':
-            Noncurious += answers[0][3]
-        elif BigFive == 'I':
-            Inquisitive += answers[0][3]
-
-    # Calculating MBTI
-    # Quadra
-
-    SiNeTiFe = Si + Ne + Ti + Fe
-    SeNiTiFe = Se + Ni + Ti + Fe
-    SiNeTeFi = Si + Ne + Te + Fi
-    SeNiTeFi = Se + Ni + Te + Fi
-
-    Quadra = {'SiNeTiFe': SiNeTiFe, 'SeNiTiFe': SeNiTiFe, 'SiNeTeFi': SiNeTeFi, 'SeNiTeFi': SeNiTeFi}
+    Quadra = {'SiNeTiFe': MBTI['Si'] + MBTI['Ne'] + MBTI['Ti'] + MBTI['Fe'],
+              'SeNiTiFe': MBTI['Se'] + MBTI['Ni'] + MBTI['Ti'] + MBTI['Fe'],
+              'SiNeTeFi': MBTI['Si'] + MBTI['Ne'] + MBTI['Te'] + MBTI['Fi'],
+              'SeNiTeFi': MBTI['Se'] + MBTI['Ni'] + MBTI['Te'] + MBTI['Fi']}
     HighestQuadra = max(Quadra, key=Quadra.get)
 
     if HighestQuadra == 'SiNeTiFe':
@@ -212,27 +133,26 @@ def get_types():
 
     # Calculating Enneagram
 
-    Ennea = {'1': One, '2': Two, '3': Three, '4': Four, '5': Five, '6': Six, '7': Seven, '8': Eight, '9': Nine}
-    HighestEnnea = max(Ennea, key=Ennea.get)
+    HighestEnnea = max(Enneagram, key=Enneagram.get)
 
     if HighestEnnea == '1':
-        Wings = {'w2': Two, 'w9': Nine}
+        Wings = {'w2': Enneagram['2'], 'w9': Enneagram['9']}
     elif HighestEnnea == '2':
-        Wings = {'w1': One, 'w3': Three}
+        Wings = {'w1': Enneagram['1'], 'w3': Enneagram['3']}
     elif HighestEnnea == '3':
-        Wings = {'w2': Two, 'w4': Four}
+        Wings = {'w2': Enneagram['2'], 'w4': Enneagram['4']}
     elif HighestEnnea == '4':
-        Wings = {'w3': Three, 'w5': Five}
+        Wings = {'w3': Enneagram['3'], 'w5': Enneagram['5']}
     elif HighestEnnea == '5':
-        Wings = {'w4': Four, 'w6': Six}
+        Wings = {'w4': Enneagram['4'], 'w6': Enneagram['6']}
     elif HighestEnnea == '6':
-        Wings = {'w5': Five, 'w7': Seven}
+        Wings = {'w5': Enneagram['5'], 'w7': Enneagram['7']}
     elif HighestEnnea == '7':
-        Wings = {'w6': Six, 'w8': Eight}
+        Wings = {'w6': Enneagram['6'], 'w8': Enneagram['8']}
     elif HighestEnnea == '8':
-        Wings = {'w7': Seven, 'w9': Nine}
+        Wings = {'w7': Enneagram['7'], 'w9': Enneagram['9']}
     elif HighestEnnea == '9':
-        Wings = {'w8': Eight, 'w1': One}
+        Wings = {'w8': Enneagram['8'], 'w1': Enneagram['1']}
 
     HighestWing = max(Wings, key=Wings.get)
     HighestEnnea += HighestWing
@@ -240,13 +160,7 @@ def get_types():
 
     # Calculating BigFive
 
-    RS = {'Reserved': Reserved, 'Social': Social}
-    LC = {'Limbic': Limbic, 'Calm': Calm}
-    UO = {'Unstructured': Unstructured, 'Organised': Organised}
-    EA = {'Egocentric': Egocentric, 'Accomodating': Accomodating}
-    IN = {'Inquisitive': Inquisitive, 'Noncurious': Noncurious}
-
-    HighestRS = max(RS, key=RS.get)
+    HighestRS = max(BigFive['R'], BigFive['S'])
     HighestLC = max(LC, key=LC.get)
     HighestUO = max(UO, key=UO.get)
     HighestEA = max(EA, key=EA.get)
