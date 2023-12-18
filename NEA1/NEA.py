@@ -1,6 +1,32 @@
+from webbrowser import get
 import database
+from webscraping import get_mbti_values
+import re
 
 myDb = database.Database()
+
+"""
+def get_char_types(id):
+    
+    MBTI = {'Si':0, 'Se':0, 'Ni':0, 'Ne':0,
+            'Fi':0, 'Fe':0, 'Ti':0, 'Te':0}
+
+    MBTIvalues = get_mbti_values(id)
+
+    MBTIlist = ['ISFJ', 'ESFJ', 'INTP', 'ENTP',
+                'ISTJ', 'ESTJ', 'INFP', 'ENFP',
+                'INFJ', 'ENFJ', 'ISTP', 'ESTP',
+                'INTJ', 'ENTJ', 'ISFP', 'ESFP']
+
+    for mbti in MBTIlist:
+        
+        if bool(re.search('ISFJ', mbti)):
+            MBTI[ += 8, 
+
+        MBTIvalues[mbti]
+
+    return None
+"""
 
 def get_types():
 
@@ -188,8 +214,6 @@ def get_types():
 
     Ennea = {'1': One, '2': Two, '3': Three, '4': Four, '5': Five, '6': Six, '7': Seven, '8': Eight, '9': Nine}
     HighestEnnea = max(Ennea, key=Ennea.get)
-
-    EnneaIndex = list(Ennea.keys()).index(HighestEnnea)
 
     if HighestEnnea == '1':
         Wings = {'w2': Two, 'w9': Nine}

@@ -4,9 +4,9 @@ import databaseChars
 
 
 myDb = databaseChars.Database()
-ids = [1, 2, 3, 4]
-
 myDb.delete_table()
+
+ids = [1, 2, 3, 4]
 
 
 for id in ids:

@@ -50,6 +50,8 @@ class NEAselection(tk.Frame):
 
     def create_labels(self):
 
+
+
         def deselect_character(name):
             for i in range(len(self.wgts[name])):
                 self.wgts[name][i].config(bg='#cccccc')
@@ -87,7 +89,7 @@ class NEAselection(tk.Frame):
             self.lbls[f'{name} Picture'].grid(row=id, rowspan=2, column=0, padx=5, pady=5, sticky=tk.W)
             self.lbls[f'{name} Picture'].image=img
 
-            self.lbls[f'{name} Label'] = tk.Label(self.frms[name], text=name, font=('Helvetica', 12), bg='#cccccc')
+            self.lbls[f'{name} Label'] = tk.Label(self.frms[name], text=name, font=('TkDefaultFont', 12), bg='#cccccc')
             self.lbls[f'{name} Label'].grid(row=id, column=1, padx=5, sticky=tk.W)
 
             self.lbls[f'{name} Series'] = tk.Label(self.frms[name], text=series, bg='#cccccc')
