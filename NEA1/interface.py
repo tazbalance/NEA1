@@ -7,8 +7,7 @@ from PIL import Image, ImageTk
 import urllib.request
 import os
 
-from NEA import get_types
-from NEA1.NEA import get_char_types
+from NEA import get_types, get_char_types
 import database
 import databaseChars
 from webscraping import ids
@@ -16,6 +15,10 @@ from webscraping import ids
 
 global qNumber
 qNumber = 1
+
+global chars
+chars = []
+
 myDb = database.Database()
 myCharDb = databaseChars.Database()
 
@@ -31,7 +34,6 @@ class NEAselection(tk.Frame):
         self.db = myCharDb
 
         self.wgts: Dict[str] = {}
-        self.chrs = []
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
@@ -56,14 +58,16 @@ class NEAselection(tk.Frame):
                 self.wgts[name][i+1].config(bg='#cccccc')
             self.btns[name].config(text='Select', command=lambda n=name:select_character(n))
             id = self.wgts[name][0]
-            self.chrs.remove(id)
+            global chars
+            chars.remove(id)
 
         def select_character(name):
             for i in range(len(self.wgts[name])-1):
                 self.wgts[name][i+1].config(bg='#666666')
             self.btns[name].config(text='Deselect', command=lambda n=name:deselect_character(n))
             id = self.wgts[name][0]
-            self.chrs.append(id)
+            global chars
+            chars.append(id)
 
         for id in ids:
             char_info = myCharDb.get_character_info(id)[0]
@@ -98,7 +102,7 @@ class NEAselection(tk.Frame):
             self.lbls[f'{name} Series'] = tk.Label(self.frms[name], text=series, bg='#cccccc')
             self.lbls[f'{name} Series'].grid(row=id+1, column=1, padx=5, sticky=tk.W)
 
-            self.btns[name] = tk.Button(self.frms[f'{name} Frame'], text='Select', height=4, value=id, command=lambda n=name:select_character(n))
+            self.btns[name] = tk.Button(self.frms[f'{name} Frame'], text='Select', height=4, command=lambda n=name:select_character(n))
             self.btns[name].grid(row=id, rowspan=2, column=2, pady=10, sticky=tk.E)
 
             self.wgts[name] = [id,
@@ -113,9 +117,6 @@ class NEAselection(tk.Frame):
         def destroy_window():
             global root
             root.destroy()
-        
-        for id in self.chrs:
-            get_char_types(id)
 
         self.btns["Quiz"] = tk.Button(self.frms["frame"], text='Finished', command=destroy_window)
         self.btns["Quiz"].grid(column=0, padx=5, pady=5, sticky=tk.W)
@@ -248,22 +249,36 @@ class NEAresults(tk.Frame):
         self.frms["frame"] = tk.Frame(self.frms["parent"])
         self.frms["frame"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
+        self.frms["characters"] = tk.Frame(self.frms["parent"])
+        self.frms["characters"].grid(row=0, column=2, padx=5, pady=5, sticky=tk.W)
+
     
     def create_labels(self):
-        label = tk.Label(self.frms["frame"], text='Results:')
+        label = tk.Label(self.frms["frame"], text='Quiz Results:')
         label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
         
         label = tk.Label(self.frms["frame"])
         
-        types = get_types()
-        MBTItype = types[0]
-        Enneagram = types[1]
-        BigFive = types[2]
+        MBTItype, Enneagram, BigFive = get_types()
+
+        global chars
+        for id in chars:
+            CharMBTI, CharEnnea, CharBig5 = get_char_types(id)
             
         results = [f'MBTI: {MBTItype}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
-        
+        char_results = [f'MBTI: {CharMBTI}', f'Enneagram: {CharEnnea}', f'Big Five: {CharBig5}']
+
         for text in results:
             lbl = tk.Label(self.frms["frame"], text=text)
+            lbl.grid(column=0, padx=5, sticky=tk.W)
+        
+        label = tk.Label(self.frms["characters"], text='Selection Results:')
+        label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+        
+        label = tk.Label(self.frms["characters"])
+        
+        for text in char_results:
+            lbl = tk.Label(self.frms["characters"], text=text)
             lbl.grid(column=0, padx=5, sticky=tk.W)
 
 
