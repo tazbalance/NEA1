@@ -259,63 +259,59 @@ class NEAresults(tk.Frame):
         self.frms["parent"] = tk.Frame(self.parent)
         self.frms["parent"].grid(sticky=tk.W)
 
-        self.frms["frame"] = tk.Frame(self.frms["parent"])
-        self.frms["frame"].grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
-
         self.frms["characters"] = tk.Frame(self.frms["parent"])
-        self.frms["characters"].grid(row=0, column=2, padx=5, pady=5, sticky=tk.W)
+        self.frms["characters"].grid(padx=10, sticky=tk.W)
+
+        self.frms["frame"] = tk.Frame(self.frms["parent"])
+        self.frms["frame"].grid(column=1, row=0, padx=10, sticky=tk.W)
 
         self.frms["diff"] = tk.Frame(self.frms["parent"])
-        self.frms["diff"].grid(row=0, column=3, padx=5, pady=5, sticky=tk.W)
+        self.frms["diff"].grid(column=2, row=0, padx=10, sticky=tk.W)
 
     
     def create_labels(self):
 
         # Selection
+        
+        label = tk.Label(self.frms["characters"], text='Selection Results:')
+        label.grid(pady=10, sticky=tk.W)
 
         global chars
         for id in chars:
             CharMBTI, CharEnnea, CharBig5 = get_char_types(id)
-
-        label = tk.Label(self.frms["characters"], text='Selection Results:')
-        label.grid(padx=5, pady=5, sticky=tk.W)
-        label = tk.Label(self.frms["characters"])
         
         char_results = [f'MBTI: {CharMBTI}', f'Enneagram: {CharEnnea}', f'Big Five: {CharBig5}']
 
         for text in char_results:
             lbl = tk.Label(self.frms["characters"], text=text)
-            lbl.grid(padx=5, sticky=tk.W)
+            lbl.grid(sticky=tk.W)
         
 
         # Quiz
         
-        MBTItype, Enneagram, BigFive = get_types()
-
         label = tk.Label(self.frms["frame"], text='Quiz Results:')
-        label.grid(padx=5, pady=5, sticky=tk.W)
-        label = tk.Label(self.frms["frame"])
-            
+        label.grid(pady=10, sticky=tk.W)
+
+        MBTItype, Enneagram, BigFive = get_types()
         results = [f'MBTI: {MBTItype}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
 
         for text in results:
             lbl = tk.Label(self.frms["frame"], text=text)
-            lbl.grid(padx=5, sticky=tk.W)
+            lbl.grid(sticky=tk.W)
         
 
         # Difference
+        
+        label = tk.Label(self.frms["diff"], text='Percentage Difference:')
+        label.grid(pady=10, sticky=tk.W)
 
         DiffMBTI, DiffEnnea, DiffBig5 = get_difference([CharMBTI,CharEnnea,CharBig5], [MBTItype,Enneagram,BigFive])
-
-        label = tk.Label(self.frms["diff"], text='Percentage Difference:')
-        label.grid(padx=5, pady=5, sticky=tk.W)
-        label = tk.Label(self.frms["diff"])
-
         diff_results = [f'MBTI: {DiffMBTI}', f'Enneagram: {DiffEnnea}', f'Big Five: {DiffBig5}']
 
         for text in diff_results:
             lbl = tk.Label(self.frms["diff"], text=text)
-            lbl.grid(padx=5, sticky=tk.W)
+            lbl.grid(sticky=tk.W)
+
 
 
 def runSelection():
