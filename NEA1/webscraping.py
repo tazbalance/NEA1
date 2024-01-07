@@ -6,7 +6,7 @@ import databaseChars
 myDb = databaseChars.Database()
 myDb.delete_table()
 
-ids = [1, 2, 3, 4]
+ids = [1]
 
 
 for id in ids:
@@ -35,10 +35,10 @@ def get_type_values(id):
                    '7':0, '8':0, '9':0}
 
     BigFiveValues = {'R':0, 'S':0,
-                    'L':0, 'C':0,
-                    'U':0, 'O':0,
-                    'E':0, 'A':0,
-                    'N':0, 'I':0}
+                     'L':0, 'C':0,
+                     'U':0, 'O':0,
+                     'E':0, 'A':0,
+                     'N':0, 'I':0}
 
     url = f"https://api.personality-database.com/api/v1/profile/{id}"
     http = urllib3.PoolManager()
@@ -53,19 +53,19 @@ def get_type_values(id):
         mbti = resp["breakdown_systems"]["1"][i]["personality_type"]
         count = resp["breakdown_systems"]["1"][i]["theCount"]
         count /= resp["systems"][0]["system_vote_count"]
-        MBTIvalues[mbti] = count
+        MBTIvalues[mbti] += count
     
     for i in range(len(EnneaList)):
         ennea = resp["breakdown_systems"]["2"][i]["personality_type"]
         count = resp["breakdown_systems"]["2"][i]["theCount"]
         count /= resp["systems"][1]["system_vote_count"]
-        EnneaValues[ennea[0]] = count
+        EnneaValues[ennea[0]] += count
 
     for i in range(len(BigFiveList)):
         bigfive = resp["breakdown_systems"]["9"][i]["personality_type"]
         count = resp["breakdown_systems"]["9"][i]["theCount"]
         count /= resp["systems"][6]["system_vote_count"]
         for i in range(4):
-            BigFiveValues[bigfive[i]] = count
+            BigFiveValues[bigfive[i]] += count
     
     return MBTIvalues, EnneaValues, BigFiveValues

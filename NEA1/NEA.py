@@ -1,5 +1,7 @@
 import database
 from webscraping import get_type_values
+import difflib
+
 
 myDb = database.Database()
 
@@ -151,3 +153,67 @@ def calculate_types(MBTI, Enneagram, Big5):
 
     return HighestMBTI, HighestEnnea, BigFive
 
+
+def get_difference(gchar, gquiz):
+
+    # MBTI
+
+    FuncList = {'ISFJ': 'Si Fe Ti Ne', 'ESFJ': 'Fe Si Ne Ti',
+                'INTP': 'Ti Ne Si Fe', 'ENTP': 'Ne Ti Fe Si',
+                'ISTJ': 'Si Te Fi Ne', 'ESTJ': 'Te Si Ne Fi',
+                'INFP': 'Fi Ne Si Te', 'ENFP': 'Ne Fi Te Si',
+                'INFJ': 'Ni Fe Ti Se', 'ENFJ': 'Fe Ni Se Ti',
+                'ISTP': 'Ti Se Ni Fe', 'ESTP': 'Se Ti Fe Ni',
+                'INTJ': 'Ni Te Fi Se', 'ENTJ': 'Te Ni Se Fi',
+                'ISFP': 'Fi Se Ni Te', 'ESFP': 'Se Fi Te Ni'}
+
+    char = FuncList[gchar[0]]
+    quiz = FuncList[gquiz[0]]
+
+    diff = list(difflib.Differ().compare(char.split(), quiz.split()))
+    mbtiDiff = percentage(4, diff)
+
+
+    # Enneagram
+
+    EnneaList = {'2': 'Compliant Rejection Positive',
+                 '3': 'Competent Attachment Assertive',
+                 '4': 'Frustration Withdrawn Reactive',
+
+                 '5': 'Competent Rejection Withdrawn',
+                 '6': 'Compliant Attachment Reactive',
+                 '7': 'Frustration Positive Assertive',
+
+                 '8': 'Rejection Assertive Reactive',
+                 '9': 'Positive Attachment Withdrawn',
+                 '1': 'Compliant Competent Frustration'}
+
+    char = EnneaList[gchar[1][0]] + ' ' + EnneaList[gchar[1][2]]
+    quiz = EnneaList[gquiz[1][0]] + ' ' + EnneaList[gquiz[1][2]]
+
+    pos = 0
+
+    for word1 in char.split():
+        for word2 in quiz.split():
+            if word1 == word2:
+                pos += 1
+
+    enneaDiff = f'{round(pos/6*100)}%'
+
+
+    # Big Five
+
+    diff = list(difflib.Differ().compare([*gchar[2]], [*gquiz[2]]))
+    big5Diff = percentage(5, diff)
+
+    return mbtiDiff, enneaDiff, big5Diff
+
+
+def percentage(amt, diff):
+    pos = amt
+
+    for item in diff:
+        if item[0] == '-':
+            pos -= 1
+
+    return f'{round(pos/amt*100)}%'

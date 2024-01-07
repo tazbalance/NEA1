@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 import urllib.request
 import os
 
-from NEA import get_types, get_char_types
+from NEA import get_types, get_char_types, get_difference
 import database
 import databaseChars
 from webscraping import ids
@@ -41,7 +41,7 @@ class NEAselection(tk.Frame):
 
         self.create_frames()
         self.create_labels()
-        self.create_buttons()
+        self.create_select_label()
 
 
     def create_frames(self):
@@ -60,6 +60,9 @@ class NEAselection(tk.Frame):
             id = self.wgts[name][0]
             global chars
             chars.remove(id)
+            if len(chars) == 0:
+                self.create_select_label()
+                self.btns["Quiz"].grid_forget()
 
         def select_character(name):
             for i in range(len(self.wgts[name])-1):
@@ -68,6 +71,10 @@ class NEAselection(tk.Frame):
             id = self.wgts[name][0]
             global chars
             chars.append(id)
+            if len(chars) == 1:
+                self.create_buttons()
+                self.lbls["Select"].grid_forget()
+                
 
         for id in ids:
             char_info = myCharDb.get_character_info(id)[0]
@@ -120,6 +127,12 @@ class NEAselection(tk.Frame):
 
         self.btns["Quiz"] = tk.Button(self.frms["frame"], text='Finished', command=destroy_window)
         self.btns["Quiz"].grid(column=0, padx=5, pady=5, sticky=tk.W)
+
+    
+    def create_select_label(self):
+        self.lbls["Select"] = tk.Label(self.frms["frame"], text='Select at least 1 character')
+        self.lbls["Select"].grid(column=0, padx=5, pady=5, sticky=tk.W)
+
 
 
 
@@ -252,34 +265,57 @@ class NEAresults(tk.Frame):
         self.frms["characters"] = tk.Frame(self.frms["parent"])
         self.frms["characters"].grid(row=0, column=2, padx=5, pady=5, sticky=tk.W)
 
+        self.frms["diff"] = tk.Frame(self.frms["parent"])
+        self.frms["diff"].grid(row=0, column=3, padx=5, pady=5, sticky=tk.W)
+
     
     def create_labels(self):
-        label = tk.Label(self.frms["frame"], text='Quiz Results:')
-        label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-        
-        label = tk.Label(self.frms["frame"])
-        
-        MBTItype, Enneagram, BigFive = get_types()
+
+        # Selection
 
         global chars
         for id in chars:
             CharMBTI, CharEnnea, CharBig5 = get_char_types(id)
+
+        label = tk.Label(self.frms["characters"], text='Selection Results:')
+        label.grid(padx=5, pady=5, sticky=tk.W)
+        label = tk.Label(self.frms["characters"])
+        
+        char_results = [f'MBTI: {CharMBTI}', f'Enneagram: {CharEnnea}', f'Big Five: {CharBig5}']
+
+        for text in char_results:
+            lbl = tk.Label(self.frms["characters"], text=text)
+            lbl.grid(padx=5, sticky=tk.W)
+        
+
+        # Quiz
+        
+        MBTItype, Enneagram, BigFive = get_types()
+
+        label = tk.Label(self.frms["frame"], text='Quiz Results:')
+        label.grid(padx=5, pady=5, sticky=tk.W)
+        label = tk.Label(self.frms["frame"])
             
         results = [f'MBTI: {MBTItype}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
-        char_results = [f'MBTI: {CharMBTI}', f'Enneagram: {CharEnnea}', f'Big Five: {CharBig5}']
 
         for text in results:
             lbl = tk.Label(self.frms["frame"], text=text)
-            lbl.grid(column=0, padx=5, sticky=tk.W)
+            lbl.grid(padx=5, sticky=tk.W)
         
-        label = tk.Label(self.frms["characters"], text='Selection Results:')
-        label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-        
-        label = tk.Label(self.frms["characters"])
-        
-        for text in char_results:
-            lbl = tk.Label(self.frms["characters"], text=text)
-            lbl.grid(column=0, padx=5, sticky=tk.W)
+
+        # Difference
+
+        DiffMBTI, DiffEnnea, DiffBig5 = get_difference([CharMBTI,CharEnnea,CharBig5], [MBTItype,Enneagram,BigFive])
+
+        label = tk.Label(self.frms["diff"], text='Percentage Difference:')
+        label.grid(padx=5, pady=5, sticky=tk.W)
+        label = tk.Label(self.frms["diff"])
+
+        diff_results = [f'MBTI: {DiffMBTI}', f'Enneagram: {DiffEnnea}', f'Big Five: {DiffBig5}']
+
+        for text in diff_results:
+            lbl = tk.Label(self.frms["diff"], text=text)
+            lbl.grid(padx=5, sticky=tk.W)
 
 
 def runSelection():
