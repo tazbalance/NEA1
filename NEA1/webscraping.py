@@ -6,7 +6,7 @@ import databaseChars
 myDb = databaseChars.Database()
 myDb.delete_table()
 
-ids = [567]
+ids = [141259]
 
 
 for id in ids:
@@ -73,21 +73,25 @@ def get_type_values(id):
 
 def get_celebs(mbti, ennea):
     celebNumber = 0
-    celebNames = set({})
-    celebImages = set({})
+    celebList = set({})
 
-    url = 'https://api.personality-database.com/api/v1/profiles?offset=0&limit=50&cid=1&pid=1&sort=top&cat_id=1&property_id=1'
+    url = 'https://api.personality-database.com/api/v1/profiles?offset=0&limit=100&cid=1&pid=1&sort=top&cat_id=1&property_id=1'
     http = urllib3.PoolManager()
     resp = http.request('GET', url)
     resp = json.loads(resp.data)
-
+    
     for i in range(len(resp["profiles"])):
-        if celebNumber < 3:
-            celebType = resp["profiles"][i]["personality_type"]
-            if celebType[:4] == mbti or celebType[5] == ennea[0]:
-                celebNumber += 1
-                celebNames.add(resp["profiles"][i]["mbti_profile"])
-                celebImages.add(resp["profiles"][i]["profile_image_url"])
+        celebType = resp["profiles"][i]["personality_type"]
+        celebMBTI = celebType.split()[0]
+        celebEnnea = celebType.split()[1]
 
-    return celebNames, celebImages
+        if celebMBTI == mbti or celebEnnea[0] == ennea[0]:
+            celebNumber += 1
+            name = resp["profiles"][i]["mbti_profile"]
+            image = resp["profiles"][i]["profile_image_url"]
+            info = name + '|||' + image
+            celebList.add(info)
+
+            if celebNumber > 2:
+                return celebList
 

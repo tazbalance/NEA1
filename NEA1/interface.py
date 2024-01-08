@@ -76,7 +76,7 @@ class NEAselection(tk.Frame):
                 self.lbls["Select"].grid_forget()
                 
 
-        for id in ids:
+        for row,id in enumerate(ids):
             char_info = myCharDb.get_character_info(id)[0]
 
             name = char_info[0]
@@ -90,27 +90,27 @@ class NEAselection(tk.Frame):
             os.remove(f'{id}.png')
 
             self.frms[name] = tk.Frame(self.frms["frame"], bg='#cccccc')
-            self.frms[name].grid(row=id, column=0, columnspan=50, pady=5, sticky=tk.W)
+            self.frms[name].grid(row=row, column=0, columnspan=50, pady=5, sticky=tk.W)
             self.frms[name].config(height=90, width=350)
             self.frms[name].grid_propagate(0)
 
             self.frms[f'{name} Frame'] = tk.Frame(self.frms["frame"], bg='#cccccc')
-            self.frms[f'{name} Frame'].grid(row=id, column=51, pady=5, sticky=tk.W)
+            self.frms[f'{name} Frame'].grid(row=row, column=51, pady=5, sticky=tk.W)
             self.frms[f'{name} Frame'].config(height=90, width=65)
             self.frms[f'{name} Frame'].grid_propagate(0)
 
             self.lbls[f'{name} Picture'] = tk.Label(self.frms[name], image=img, bg='#cccccc')
-            self.lbls[f'{name} Picture'].grid(row=id, rowspan=2, column=0, padx=5, pady=5, sticky=tk.W)
+            self.lbls[f'{name} Picture'].grid(row=row, rowspan=2, column=0, padx=5, pady=5, sticky=tk.W)
             self.lbls[f'{name} Picture'].image=img
 
             self.lbls[f'{name} Label'] = tk.Label(self.frms[name], text=name, font=('TkDefaultFont', 12), bg='#cccccc')
-            self.lbls[f'{name} Label'].grid(row=id, column=1, padx=5, sticky=tk.W)
+            self.lbls[f'{name} Label'].grid(row=row, column=1, padx=5, sticky=tk.W)
 
             self.lbls[f'{name} Series'] = tk.Label(self.frms[name], text=series, bg='#cccccc')
-            self.lbls[f'{name} Series'].grid(row=id+1, column=1, padx=5, sticky=tk.W)
+            self.lbls[f'{name} Series'].grid(row=row+1, column=1, padx=5, sticky=tk.W)
 
             self.btns[name] = tk.Button(self.frms[f'{name} Frame'], text='Select', height=4, command=lambda n=name:select_character(n))
-            self.btns[name].grid(row=id, rowspan=2, column=2, pady=10, sticky=tk.E)
+            self.btns[name].grid(row=row, rowspan=2, column=2, pady=10, sticky=tk.E)
 
             self.wgts[name] = [id,
                                self.frms[name],
@@ -264,7 +264,7 @@ class NEAresults(tk.Frame):
             self.frms[frame].grid(column=num, row=0, padx=10, sticky=tk.W)
 
         self.frms["like"] = tk.Frame(self.frms["parent"])
-        self.frms["like"].grid(row=1, pady=10, padx=10, sticky=tk.W)
+        self.frms["like"].grid(row=1, columnspan=4, pady=10, padx=10, sticky=tk.W)
 
     
     def create_labels(self):
@@ -316,12 +316,14 @@ class NEAresults(tk.Frame):
         label = tk.Label(self.frms["like"], text='You are similar to:')
         label.grid(pady=10, sticky=tk.W)
 
-        charNames, charImages = get_celebs(CharMBTI, CharEnnea)
-        quizNames, quizImages = get_celebs(MBTItype, Enneagram)
+        charCelebs = get_celebs(CharMBTI, CharEnnea)
+        quizCelebs = get_celebs(MBTItype, Enneagram)
 
         grid = 0
 
-        for (name,image) in zip((charNames | quizNames), (charImages | quizImages)):
+        for info in (charCelebs | quizCelebs):
+            name = info.split('|||')[0]
+            image = info.split('|||')[1]
 
             urllib.request.urlretrieve(image, f'celeb.png')
             img = Image.open(f'celeb.png')
