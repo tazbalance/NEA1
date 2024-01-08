@@ -10,7 +10,7 @@ import os
 from NEA import get_types, get_char_types, get_difference
 import database
 import databaseChars
-from webscraping import ids
+from webscraping import ids, get_celebs
 
 
 global qNumber
@@ -259,21 +259,19 @@ class NEAresults(tk.Frame):
         self.frms["parent"] = tk.Frame(self.parent)
         self.frms["parent"].grid(sticky=tk.W)
 
-        self.frms["characters"] = tk.Frame(self.frms["parent"])
-        self.frms["characters"].grid(padx=10, sticky=tk.W)
+        for num,frame in enumerate(["char", "quiz", "diff"]):
+            self.frms[frame] = tk.Frame(self.frms["parent"])
+            self.frms[frame].grid(column=num, row=0, padx=10, sticky=tk.W)
 
-        self.frms["frame"] = tk.Frame(self.frms["parent"])
-        self.frms["frame"].grid(column=1, row=0, padx=10, sticky=tk.W)
-
-        self.frms["diff"] = tk.Frame(self.frms["parent"])
-        self.frms["diff"].grid(column=2, row=0, padx=10, sticky=tk.W)
+        self.frms["like"] = tk.Frame(self.frms["parent"])
+        self.frms["like"].grid(row=1, pady=10, padx=10, sticky=tk.W)
 
     
     def create_labels(self):
 
         # Selection
         
-        label = tk.Label(self.frms["characters"], text='Selection Results:')
+        label = tk.Label(self.frms["char"], text='Selection Results:')
         label.grid(pady=10, sticky=tk.W)
 
         global chars
@@ -283,20 +281,20 @@ class NEAresults(tk.Frame):
         char_results = [f'MBTI: {CharMBTI}', f'Enneagram: {CharEnnea}', f'Big Five: {CharBig5}']
 
         for text in char_results:
-            lbl = tk.Label(self.frms["characters"], text=text)
+            lbl = tk.Label(self.frms["char"], text=text)
             lbl.grid(sticky=tk.W)
         
 
         # Quiz
         
-        label = tk.Label(self.frms["frame"], text='Quiz Results:')
+        label = tk.Label(self.frms["quiz"], text='Quiz Results:')
         label.grid(pady=10, sticky=tk.W)
 
         MBTItype, Enneagram, BigFive = get_types()
         results = [f'MBTI: {MBTItype}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
 
         for text in results:
-            lbl = tk.Label(self.frms["frame"], text=text)
+            lbl = tk.Label(self.frms["quiz"], text=text)
             lbl.grid(sticky=tk.W)
         
 
@@ -311,6 +309,31 @@ class NEAresults(tk.Frame):
         for text in diff_results:
             lbl = tk.Label(self.frms["diff"], text=text)
             lbl.grid(sticky=tk.W)
+
+
+        # Celebs
+
+        label = tk.Label(self.frms["like"], text='You are similar to:')
+        label.grid(pady=10, sticky=tk.W)
+
+        charNames, charImages = get_celebs(CharMBTI, CharEnnea)
+        quizNames, quizImages = get_celebs(MBTItype, Enneagram)
+
+        grid = 0
+
+        for (name,image) in zip((charNames | quizNames), (charImages | quizImages)):
+
+            urllib.request.urlretrieve(image, f'celeb.png')
+            img = Image.open(f'celeb.png')
+            img = img.resize((25, 25))
+            img = ImageTk.PhotoImage(img)
+            os.remove(f'celeb.png')
+
+            lbl = tk.Label(self.frms["like"], text=name, image=img, compound='left')
+            lbl.grid(column=grid, row=1, sticky=tk.W)
+            lbl.image=img
+
+            grid += 1
 
 
 

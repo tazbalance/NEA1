@@ -1,5 +1,5 @@
 import database
-from webscraping import get_type_values
+from webscraping import get_type_values, get_celebs
 import difflib
 
 
