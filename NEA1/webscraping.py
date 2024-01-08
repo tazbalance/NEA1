@@ -6,8 +6,7 @@ import databaseChars
 myDb = databaseChars.Database()
 myDb.delete_table()
 
-ids = [141259]
-
+ids = [1]
 
 for id in ids:
 
@@ -87,11 +86,11 @@ def get_celebs(mbti, ennea):
 
         if celebMBTI == mbti or celebEnnea[0] == ennea[0]:
             celebNumber += 1
+            if celebNumber > 2:
+                return celebList
+
             name = resp["profiles"][i]["mbti_profile"]
             image = resp["profiles"][i]["profile_image_url"]
             info = name + '|||' + image
             celebList.add(info)
-
-            if celebNumber > 2:
-                return celebList
 

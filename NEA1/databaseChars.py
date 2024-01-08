@@ -22,7 +22,7 @@ class Database():
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        query = f"INSERT INTO Characters (ID, Name, Series, Image) VALUES ('{id}', '{name}', '{series}', '{image}');"
+        query = f'INSERT INTO Characters (ID, Name, Series, Image) VALUES ("{id}", "{name}", "{series}", "{image}");'
         cur.execute(query)
 
         conn.commit()
