@@ -176,29 +176,22 @@ def get_difference(gchar, gquiz):
 
     # Enneagram
 
-    EnneaList = {'2': 'Compliant Rejection Positive',
-                 '3': 'Competent Attachment Assertive',
-                 '4': 'Frustration Withdrawn Reactive',
+    EnneaList = {'2': {'Compliant', 'Positive', 'Rejection'},
+                 '3': {'Assertive', 'Attachment', 'Competent'},
+                 '4': {'Frustration', 'Reactive', 'Withdrawn'},
+             
+                 '5': {'Competent', 'Rejection', 'Withdrawn'},
+                 '6': {'Attachment', 'Compliant', 'Reactive'},
+                 '7': {'Assertive', 'Frustration', 'Positive'},
+             
+                 '8': {'Assertive', 'Reactive', 'Rejection'},
+                 '9': {'Attachment', 'Positive', 'Withdrawn'},
+                 '1': {'Competent', 'Compliant', 'Frustration'}}
 
-                 '5': 'Competent Rejection Withdrawn',
-                 '6': 'Compliant Attachment Reactive',
-                 '7': 'Frustration Positive Assertive',
+    char = EnneaList[gchar[1][0]].union(EnneaList[gchar[1][2]])
+    quiz = EnneaList[gquiz[1][0]].union(EnneaList[gquiz[1][2]])
 
-                 '8': 'Rejection Assertive Reactive',
-                 '9': 'Positive Attachment Withdrawn',
-                 '1': 'Compliant Competent Frustration'}
-
-    char = EnneaList[gchar[1][0]] + ' ' + EnneaList[gchar[1][2]]
-    quiz = EnneaList[gquiz[1][0]] + ' ' + EnneaList[gquiz[1][2]]
-
-    pos = 0
-
-    for word1 in char.split():
-        for word2 in quiz.split():
-            if word1 == word2:
-                pos += 1
-
-    enneaDiff = f'{round(pos/6*100)}%'
+    enneaDiff = f'{round(len(char&quiz)/len(quiz&quiz)*100)}%'
 
 
     # Big Five

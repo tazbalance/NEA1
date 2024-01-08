@@ -6,7 +6,7 @@ import databaseChars
 myDb = databaseChars.Database()
 myDb.delete_table()
 
-ids = [1]
+ids = [567]
 
 
 for id in ids:
