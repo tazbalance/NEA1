@@ -11,6 +11,7 @@ from NEA import get_types, get_char_types, get_difference
 import database
 import databaseChars
 from webscraping import ids, get_celebs
+import data
 
 
 global qNumber
@@ -26,6 +27,7 @@ myCharDb = databaseChars.Database()
 class NEAselection(tk.Frame):
     
     def __init__(self, parent, *args, **kwargs):
+        self.theData = data.Data()
         
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
@@ -121,11 +123,7 @@ class NEAselection(tk.Frame):
 
 
     def create_buttons(self):
-        def destroy_window():
-            global root
-            root.destroy()
-
-        self.btns["Quiz"] = tk.Button(self.frms["frame"], text='Finished', command=destroy_window)
+        self.btns["Quiz"] = tk.Button(self.frms["frame"], text='Finished', command=self.make_quiz_window_appear)
         self.btns["Quiz"].grid(column=0, padx=5, pady=5, sticky=tk.W)
 
     
@@ -134,17 +132,27 @@ class NEAselection(tk.Frame):
         self.lbls["Select"].grid(column=0, padx=5, pady=5, sticky=tk.W)
 
 
+    def make_quiz_window_appear(self):
+        global root
+        root.destroy()
+        #global root
+        root = tk.Tk()
+        NEAquiz(root, self.theData).grid()
+        root.mainloop()
+
+
 
 
 
 class NEAquiz(tk.Frame):
     
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, theData, *args, **kwargs):
         
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         parent.minsize(width=450, height=200)
 
+        self.theData = theData
         self.db = myDb
 
         self.frms: Dict[str, tk.Frame] = {}
@@ -360,5 +368,5 @@ def runResults():
 
 
 runSelection()
-runQuiz()
-runResults()
+#runQuiz()
+#runResults()
