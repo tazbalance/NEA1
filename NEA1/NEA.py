@@ -3,9 +3,6 @@ from webscraping import get_type_values
 import difflib
 
 
-myDb = database.Database()
-
-
 def get_char_types(id):
 
     MBTIvalues, EnneaValues, BigFiveValues = get_type_values(id)
@@ -58,6 +55,8 @@ def get_types():
                     'U':0, 'O':0,
                     'E':0, 'A':0,
                     'N':0, 'I':0}
+
+    myDb = database.Database()
 
     for i in range(13):
         answers = myDb.get_answers(i+1)
@@ -191,7 +190,19 @@ def get_difference(gchar, gquiz):
     char = EnneaList[gchar[1][0]].union(EnneaList[gchar[1][2]])
     quiz = EnneaList[gquiz[1][0]].union(EnneaList[gquiz[1][2]])
 
-    enneaDiff = f'{round(len(char&quiz)/len(quiz&quiz)*100)}%'
+    enneaPercent = round(len(char&quiz)/len(quiz&quiz)*100)
+    enneaPercent = 5 * round(enneaPercent/5)
+
+    if gchar[1][2] == gquiz[1][0]:
+        enneaPercent = 80
+    if gchar[1][0] == gquiz[1][2]:
+        enneaPercent = 85
+    if enneaPercent == 100 and gchar[1] != gquiz[1]:
+        enneaPercent = 90
+    if enneaPercent != 100 and gchar[1][0] == gquiz[1][0]:
+        enneaPercent = 95
+
+    enneaDiff = f'{enneaPercent}%'
 
 
     # Big Five
@@ -210,3 +221,101 @@ def percentage(amt, diff):
             pos -= 1
 
     return f'{round(pos/amt*100)}%'
+
+
+"""
+List = ['1w9','1w2','2w1','2w3','3w2','3w4','4w3','4w5','5w4','5w6','6w5','6w7','7w6','7w8','8w7','8w9','9w8','9w1']
+
+for mbti in List:
+    for mbti2 in List:
+        diff = get_difference(['ISFJ', mbti, 'RLOAN'], ['ISFJ', mbti2, 'RLOAN'])
+        mbtidiff = diff[1]
+        print(f'{mbti} & {mbti2}: {mbtidiff}')
+        
+for mbti in List:
+    highest = []
+    for mbti2 in List:
+        diff = get_difference(['ISFJ', mbti, 'RLOAN'], ['ISFJ', mbti2, 'RLOAN'])
+        mbtidiff = diff[1]
+        if mbtidiff >= 85:
+            highest.append(mbti2)
+    print(highest)
+"""
+
+
+mbtiGraph = {'ISFJ': ['ESFJ', 'INTP', 'ISTJ', 'ESTJ', 'INFJ', 'ENFJ'],
+             'ESFJ': ['ISFJ', 'ENTP', 'ISTJ', 'ESTJ', 'INFJ', 'ENFJ'],
+             'INTP': ['ISFJ', 'ENTP', 'INFP', 'ENFP', 'ISTP', 'ESTP'],
+             'ENTP': ['ESFJ', 'INTP', 'INFP', 'ENFP', 'ISTP', 'ESTP'],
+             'ISTJ': ['ISFJ', 'ESFJ', 'ESTJ', 'INFP', 'INTJ', 'ENTJ'],
+             'ESTJ': ['ISFJ', 'ESFJ', 'ISTJ', 'ENFP', 'INTJ', 'ENTJ'],
+             'INFP': ['INTP', 'ENTP', 'ISTJ', 'ENFP', 'ISFP', 'ESFP'],
+             'ENFP': ['INTP', 'ENTP', 'ESTJ', 'INFP', 'ISFP', 'ESFP'],
+             'INFJ': ['ISFJ', 'ESFJ', 'ENFJ', 'ISTP', 'INTJ', 'ENTJ'],
+             'ENFJ': ['ISFJ', 'ESFJ', 'INFJ', 'ESTP', 'INTJ', 'ENTJ'],
+             'ISTP': ['INTP', 'ENTP', 'INFJ', 'ESTP', 'ISFP', 'ESFP'],
+             'ESTP': ['INTP', 'ENTP', 'ENFJ', 'ISTP', 'ISFP', 'ESFP'],
+             'INTJ': ['ISTJ', 'ESTJ', 'INFJ', 'ENFJ', 'ENTJ', 'ISFP'],
+             'ENTJ': ['ISTJ', 'ESTJ', 'INFJ', 'ENFJ', 'INTJ', 'ESFP'],
+             'ISFP': ['INFP', 'ENFP', 'ISTP', 'ESTP', 'INTJ', 'ESFP'],
+             'ESFP': ['INFP', 'ENFP', 'ISTP', 'ESTP', 'ENTJ', 'ISFP']}
+
+enneaGraph = {'1w9': ['9w1','1w2','2w1'],
+              '1w2': ['9w1','1w9','2w1'],
+              '2w1': ['1w2','2w3','3w2'],
+              '2w3': ['1w2','2w1','3w2'],
+              '3w2': ['2w3','3w4','4w3'],
+              '3w4': ['2w3','3w2','4w3'],
+              '4w3': ['3w4','4w5','5w4'],
+              '4w5': ['3w4','4w3','5w4'],
+              '5w4': ['4w5','5w6','6w5'],
+              '5w6': ['4w5','5w4','6w5'],
+              '6w5': ['5w6','6w7','7w6'],
+              '6w7': ['5w6','6w5','7w6'],
+              '7w6': ['6w7','7w8','8w7'],
+              '7w8': ['6w7','7w6','8w7'],
+              '8w7': ['7w8','8w9','9w8'],
+              '8w9': ['7w8','8w7','9w8'],
+              '9w8': ['8w9','9w1','1w9'],
+              '9w1': ['8w9','9w8','1w9']}
+
+
+def BFS_SP(graph, start, goal):
+    explored = []
+     
+    # Queue for traversing the 
+    # graph in the BFS
+    queue = [[start]]
+     
+    # If the desired node is 
+    # reached
+    if start == goal:
+        print("Same Node")
+        return
+     
+    # Loop to traverse the graph 
+    # with the help of the queue
+    while queue:
+        path = queue.pop(0)
+        node = path[-1]
+         
+        # Condition to check if the
+        # current node is not visited
+        if node not in explored:
+            neighbours = graph[node]
+             
+            # Loop to iterate over the 
+            # neighbours of the node
+            for neighbour in neighbours:
+                new_path = list(path)
+                new_path.append(neighbour)
+                queue.append(new_path)
+                 
+                # Condition to check if the 
+                # neighbour node is the goal
+                if neighbour == goal:
+                    print("Shortest path = ", *new_path)
+                    return
+            explored.append(node)
+
+BFS_SP(mbtiGraph, 'ISFJ', 'ISFP')

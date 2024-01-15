@@ -4,6 +4,14 @@ import databaseChars
 import data
 
 
+# store information about related characters
+# have fields in character table about visibility in program (boolean) and info
+# calculate information from existing data
+
+# ALTER TABLE table_name
+# ADD column_name datatype;
+
+
 def find_info():
     myDb = databaseChars.Database()
     myDb.delete_table()
