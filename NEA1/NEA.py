@@ -1,27 +1,27 @@
 import database
-from webscraping import get_type_values, get_celebs
+from webscraping import get_type_values
 import difflib
 
 
 myDb = database.Database()
 
-MBTIfuncs = {'Si':0, 'Se':0, 'Ni':0, 'Ne':0,
-             'Fi':0, 'Fe':0, 'Ti':0, 'Te':0}
-
-Enneas = {'1':0, '2':0, '3':0,
-          '4':0, '5':0, '6':0,
-          '7':0, '8':0, '9':0}
-
-BigFives = {'R':0, 'S':0,
-            'L':0, 'C':0,
-            'U':0, 'O':0,
-            'E':0, 'A':0,
-            'N':0, 'I':0}
-
 
 def get_char_types(id):
 
     MBTIvalues, EnneaValues, BigFiveValues = get_type_values(id)
+
+    MBTIfuncs = {'Si':0, 'Se':0, 'Ni':0, 'Ne':0,
+                 'Fi':0, 'Fe':0, 'Ti':0, 'Te':0}
+
+    Enneas = {'1':0, '2':0, '3':0,
+              '4':0, '5':0, '6':0,
+              '7':0, '8':0, '9':0}
+
+    BigFives = {'R':0, 'S':0,
+                'L':0, 'C':0,
+                'U':0, 'O':0,
+                'E':0, 'A':0,
+                'N':0, 'I':0}
 
     MBTIlist = [['Si', 'Fe', 'Ti', 'Ne'], ['Fe', 'Si', 'Ne', 'Ti'], ['Ti', 'Ne', 'Si', 'Fe'], ['Ne', 'Ti', 'Fe', 'Si'],
                 ['Si', 'Te', 'Fi', 'Ne'], ['Te', 'Si', 'Ne', 'Fi'], ['Fi', 'Ne', 'Si', 'Te'], ['Ne', 'Fi', 'Te', 'Si'],

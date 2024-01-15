@@ -1,25 +1,28 @@
 import urllib3
 import json
 import databaseChars
+import data
 
 
-myDb = databaseChars.Database()
-myDb.delete_table()
+def find_info():
+    myDb = databaseChars.Database()
+    myDb.delete_table()
 
-ids = [1]
+    theData = data.Data()
+    ids = theData.get_ids()
 
-for id in ids:
+    for id in ids:
 
-    url = f"https://api.personality-database.com/api/v1/profile/{id}"
-    http = urllib3.PoolManager()
-    resp = http.request('GET', url)
-    resp = json.loads(resp.data)
+        url = f"https://api.personality-database.com/api/v1/profile/{id}"
+        http = urllib3.PoolManager()
+        resp = http.request('GET', url)
+        resp = json.loads(resp.data)
 
-    name = resp["mbti_profile"]
-    series = resp["subcategory"]
-    image = resp["profile_image_url"]
+        name = resp["mbti_profile"]
+        series = resp["subcategory"]
+        image = resp["profile_image_url"]
 
-    myDb.insert_character(id, name, series, image)
+        myDb.insert_character(id, name, series, image)
 
 
 def get_type_values(id):
