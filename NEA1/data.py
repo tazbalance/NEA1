@@ -6,17 +6,23 @@ class Data:
 
     def __init__(self):
 
-        self.ids = [1]
+        self.ids = [14]
 
         self.myDb = database.Database()
         self.myCharDb = databaseChars.Database()
         self.chars = []
         self.qNumber = 1
 
+        self.set_visible_ids()
+
     # ========================== ids ==========================
 
     def get_ids(self):
         return self.ids
+
+    def set_visible_ids(self):
+        for id in self.ids:
+            self.myCharDb.set_visibility(id)
 
     # =================== question database ===================
 
