@@ -9,26 +9,6 @@ class Database():
         self.reset_visibility()
 
 
-    def reset_visibility(self):
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-
-        query = f'UPDATE Characters SET Visible = 0'
-        cur.execute(query)
-
-        conn.commit()
-
-
-    def set_visibility(self, id):
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-
-        query = f'UPDATE Characters SET Visible = 1 WHERE ID = {id};'
-        cur.execute(query)
-
-        conn.commit()
-
-
     def delete_table(self):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
@@ -82,13 +62,3 @@ class Database():
 
         conn.close()
         return result
-
-
-
-conn = sqlite3.connect(Path(__file__).with_name('NEAcharacterDB.db'))
-cur = conn.cursor()
-
-query = f'ALTER TABLE Characters ADD VoteData Text;'
-cur.execute(query)
-
-conn.commit()

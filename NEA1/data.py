@@ -20,10 +20,6 @@ class Data:
     def get_ids(self):
         return self.ids
 
-    def set_visible_ids(self):
-        for id in self.ids:
-            self.myCharDb.set_visibility(id)
-
     # =================== question database ===================
 
     def get_db(self):

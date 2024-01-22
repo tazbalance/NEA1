@@ -30,8 +30,9 @@ def find_info():
             image = resp["profile_image_url"]
 
             typedata = json.dumps(resp["breakdown_systems"])
+            votedata = json.dumps(resp["systems"])
 
-            myDb.insert_character(id, name, series, image, typedata)
+            myDb.insert_character(id, name, series, image, typedata, votedata)
 
 
 def get_type_values(id):
@@ -55,6 +56,9 @@ def get_type_values(id):
 
     typedata = myDb.get_character_data(id)
     typedata = json.loads(typedata)
+
+    votedata = myDb.get_vote_data(id)
+    votedata = json.loads(votedata)
 
     MBTIlist = typedata["1"]
     EnneaList = typedata["2"]
