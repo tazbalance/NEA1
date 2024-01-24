@@ -11,7 +11,7 @@ import data
 
 def find_info():
     myDb = databaseChars.Database()
-    # myDb.delete_table()
+    myDb.delete_table()
 
     theData = data.Data()
     ids = theData.get_ids()
@@ -57,29 +57,29 @@ def get_type_values(id):
     typedata = myDb.get_character_data(id)
     typedata = json.loads(typedata)
 
-    votedata = myDb.get_vote_data(id)
-    votedata = json.loads(votedata)
-
     MBTIlist = typedata["1"]
     EnneaList = typedata["2"]
     BigFiveList = typedata["9"]
 
+    votedata = myDb.get_vote_data(id)
+    votedata = json.loads(votedata)
+
     for i in range(len(MBTIlist)):
         mbti = MBTIlist[i]["personality_type"]
         count = MBTIlist[i]["theCount"]
-        count /= typedata["systems"][0]["system_vote_count"]
+        count /= votedata[0]["system_vote_count"]
         MBTIvalues[mbti] += count
     
     for i in range(len(EnneaList)):
         ennea = EnneaList[i]["personality_type"]
         count = EnneaList[i]["theCount"]
-        count /= typedata[1]["system_vote_count"]
+        count /= votedata[1]["system_vote_count"]
         EnneaValues[ennea[0]] += count
 
     for i in range(len(BigFiveList)):
         bigfive = BigFiveList[i]["personality_type"]
         count = BigFiveList[i]["theCount"]
-        count /= typedata[6]["system_vote_count"]
+        count /= votedata[6]["system_vote_count"]
         for i in range(4):
             BigFiveValues[bigfive[i]] += count
     

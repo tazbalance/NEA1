@@ -6,14 +6,12 @@ class Data:
 
     def __init__(self):
 
-        self.ids = [14]
+        self.ids = [1,2,3,4]
 
         self.myDb = database.Database()
         self.myCharDb = databaseChars.Database()
         self.chars = []
         self.qNumber = 1
-
-        self.set_visible_ids()
 
     # ========================== ids ==========================
 

@@ -23,8 +23,9 @@ class NEAselection(tk.Frame):
         self.theData = data.Data()
         find_info()
 
-        self.wgts: Dict[str] = {}
+        self.parent.title("Selection")
 
+        self.wgts: Dict[str] = {}
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
         self.btns: Dict[str, tk.Button] = {}
@@ -137,6 +138,8 @@ class NEAquiz(tk.Frame):
 
         self.theData = theData
 
+        self.parent.title("Quiz")
+
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
         self.btns: Dict[str, tk.Button] = {}
@@ -238,6 +241,8 @@ class NEAresults(tk.Frame):
         parent.minsize(width=450, height=200)
 
         self.theData = theData
+
+        self.parent.title("Results")
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
