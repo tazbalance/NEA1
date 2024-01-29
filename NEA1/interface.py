@@ -7,8 +7,8 @@ from PIL import Image, ImageTk
 import urllib.request
 import os
 
-from NEA import get_types, get_char_types, get_difference
 from webscraping import find_info, get_celebs
+import NEA
 import data
 
 
@@ -18,12 +18,11 @@ class NEAselection(tk.Frame):
         
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.parent.title("Selection")
         parent.minsize(width=450, height=400)
 
         self.theData = data.Data()
         find_info()
-
-        self.parent.title("Selection")
 
         self.wgts: Dict[str] = {}
         self.frms: Dict[str, tk.Frame] = {}
@@ -134,11 +133,10 @@ class NEAquiz(tk.Frame):
         
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.parent.title("Quiz")
         parent.minsize(width=450, height=200)
 
         self.theData = theData
-
-        self.parent.title("Quiz")
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
@@ -238,11 +236,10 @@ class NEAresults(tk.Frame):
         
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.parent.title("Results")
         parent.minsize(width=450, height=200)
 
         self.theData = theData
-
-        self.parent.title("Results")
 
         self.frms: Dict[str, tk.Frame] = {}
         self.lbls: Dict[str, tk.Label] = {}
@@ -265,13 +262,16 @@ class NEAresults(tk.Frame):
     
     def create_labels(self):
 
+        NEAtypes = NEA.Types()
+
         # Selection
         
         label = tk.Label(self.frms["char"], text='Selection Results:')
         label.grid(pady=10, sticky=tk.W)
 
+        NEAtypes.instantiate_types()
         for id in self.theData.get_chars():
-            CharMBTI, CharEnnea, CharBig5 = get_char_types(id)
+            CharMBTI, CharEnnea, CharBig5 = NEAtypes.get_char_types(id)
         
         char_results = [f'MBTI: {CharMBTI}', f'Enneagram: {CharEnnea}', f'Big Five: {CharBig5}']
 
@@ -285,7 +285,8 @@ class NEAresults(tk.Frame):
         label = tk.Label(self.frms["quiz"], text='Quiz Results:')
         label.grid(pady=10, sticky=tk.W)
 
-        MBTItype, Enneagram, BigFive = get_types()
+        NEAtypes.instantiate_types()
+        MBTItype, Enneagram, BigFive = NEAtypes.get_types()
         results = [f'MBTI: {MBTItype}', f'Enneagram: {Enneagram}', f'Big Five: {BigFive}']
 
         for text in results:
@@ -298,7 +299,7 @@ class NEAresults(tk.Frame):
         label = tk.Label(self.frms["diff"], text='Percentage Difference:')
         label.grid(pady=10, sticky=tk.W)
 
-        DiffMBTI, DiffEnnea, DiffBig5 = get_difference([CharMBTI,CharEnnea,CharBig5], [MBTItype,Enneagram,BigFive])
+        DiffMBTI, DiffEnnea, DiffBig5 = NEAtypes.get_difference([CharMBTI,CharEnnea,CharBig5], [MBTItype,Enneagram,BigFive])
         diff_results = [f'MBTI: {DiffMBTI}', f'Enneagram: {DiffEnnea}', f'Big Five: {DiffBig5}']
 
         for text in diff_results:

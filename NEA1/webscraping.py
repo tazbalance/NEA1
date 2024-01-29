@@ -5,7 +5,6 @@ import data
 
 
 # store information about related characters
-# have fields in character table about visibility in program (boolean) and info
 # calculate information from existing data
 
 
