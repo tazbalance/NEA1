@@ -6,7 +6,7 @@ class Data:
 
     def __init__(self):
 
-        self.ids = [1,2,3,4]
+        self.ids = [1,3,4]
 
         self.myDb = database.Database()
         self.myCharDb = databaseChars.Database()

@@ -1,4 +1,3 @@
-from re import A
 import data
 import database
 from webscraping import get_type_values
@@ -45,8 +44,7 @@ class Types():
         for key, value in BigFiveValues.items():
             self.BigFives[key] += value
 
-        HighestMBTI, HighestEnnea, HighestBigFive = self.calculate_types(self.MBTIfuncs, self.Enneas, self.BigFives)
-        return HighestMBTI, HighestEnnea, HighestBigFive
+        return self.calculate_types(self.MBTIfuncs, self.Enneas, self.BigFives)
 
 
     def get_types(self):
@@ -67,8 +65,7 @@ class Types():
             if answers[0][2] != '/':
                 self.BigFives[answers[0][2]] += answers[0][3]
 
-        HighestMBTI, HighestEnnea, HighestBigFive = self.calculate_types(self.MBTIfuncs, self.Enneas, self.BigFives)
-        return HighestMBTI, HighestEnnea, HighestBigFive
+        return self.calculate_types(self.MBTIfuncs, self.Enneas, self.BigFives)
 
 
     def calculate_types(self, MBTI, Enneagram, Big5):
@@ -86,58 +83,38 @@ class Types():
 
         perceivingDiff = abs(perceivingFuncs[0] - perceivingFuncs[1])
         judgingDiff = abs(judgingFuncs[0] - judgingFuncs[1])
+        
+        Type = {'SiNeTiFe': ['ISFJ Si', 'ENTP Ne', 'ESFJ Fe', 'INTP Ti'],
+                'SeNiTiFe': ['ESTP Se', 'INFJ Ni', 'ISTP Ti', 'INTP Ti'],
+                'SiNeTeFi': ['ISTJ Si', 'ENFP Ne', 'ESTJ Te', 'INFP Fi'],
+                'SeNiTeFi': ['ESFP Se', 'INFJ Ni', 'ISFP Fi', 'ENTJ Te']}
 
-        if Quadra == 'SiNeTiFe':
-            if perceivingDiff > judgingDiff:
-                DomInf = {'ISFJ': MBTI['Si'], 'ENTP': MBTI['Ne']}
+        if perceivingDiff > judgingDiff:
+            if MBTI[Type[Quadra][0][5:7]] > MBTI[Type[Quadra][1][5:7]]:
+                Highest = 0
             else:
-                DomInf = {'ESFJ': MBTI['Fe'], 'INTP': MBTI['Ti']}
-
-        elif Quadra == 'SeNiTiFe':
-            if perceivingDiff > judgingDiff:
-                DomInf = {'ESTP': MBTI['Se'], 'INFJ': MBTI['Ni']}
+                Highest = 1
+        else:
+            if MBTI[Type[Quadra][2][5:7]] > MBTI[Type[Quadra][3][5:7]]:
+                Highest = 2
             else:
-                DomInf = {'ISTP': MBTI['Ti'], 'ENFJ': MBTI['Fe']}
-
-        elif Quadra == 'SiNeTeFi':
-            if perceivingDiff > judgingDiff:
-                DomInf = {'ISTJ': MBTI['Si'], 'ENFP': MBTI['Ne']}
-            else:
-                DomInf = {'ESTJ': MBTI['Te'], 'INFP': MBTI['Fi']}
-
-        elif Quadra == 'SeNiTeFi':
-            if perceivingDiff > judgingDiff:
-                DomInf = {'ESTP': MBTI['Se'], 'INFJ': MBTI['Ni']}
-            else:
-                DomInf = {'ISFP': MBTI['Fe'], 'ENTJ': MBTI['Te']}
-    
-        HighestMBTI = max(DomInf, key=DomInf.get)
-
+                Highest = 3
+            
+        HighestMBTI = Type[Quadra][Highest][0:4]
+        
 
         # Calculating Enneagram
 
         HighestEnnea = max(Enneagram, key=Enneagram.get)
 
-        if HighestEnnea == '1':
-            Wings = {'2':Enneagram['2'], '9':Enneagram['9']}
-        elif HighestEnnea == '2':
-            Wings = {'1':Enneagram['1'], '3':Enneagram['3']}
-        elif HighestEnnea == '3':
-            Wings = {'2':Enneagram['2'], '4':Enneagram['4']}
-        elif HighestEnnea == '4':
-            Wings = {'3':Enneagram['3'], '5':Enneagram['5']}
-        elif HighestEnnea == '5':
-            Wings = {'4':Enneagram['4'], '6':Enneagram['6']}
-        elif HighestEnnea == '6':
-            Wings = {'5':Enneagram['5'], '7':Enneagram['7']}
-        elif HighestEnnea == '7':
-            Wings = {'6':Enneagram['6'], '8':Enneagram['8']}
-        elif HighestEnnea == '8':
-            Wings = {'7':Enneagram['7'], '9':Enneagram['9']}
-        elif HighestEnnea == '9':
-            Wings = {'8':Enneagram['8'], '1':Enneagram['1']}
+        WingList = {'1':['2','9'], '2':['1','3'], '3':['2','4'],
+                    '4':['3','5'], '5':['4','6'], '6':['5','7'],
+                    '7':['6','8'], '8':['7','9'], '9':['8','1']}
 
-        HighestEnnea += 'w' + max(Wings, key=Wings.get)
+        if Enneagram[WingList[HighestEnnea][0]] > Enneagram[WingList[HighestEnnea][1]]:
+            HighestEnnea += 'w' + WingList[HighestEnnea][0]
+        else:
+            HighestEnnea += 'w' + WingList[HighestEnnea][1]
 
 
         # Calculating BigFive
@@ -152,7 +129,7 @@ class Types():
         return HighestMBTI, HighestEnnea, BigFive
 
 
-    def get_difference(gchar, gquiz):
+    def get_difference(self, gchar, gquiz):
 
         # MBTI
 
@@ -169,7 +146,7 @@ class Types():
         quiz = FuncList[gquiz[0]]
 
         diff = list(difflib.Differ().compare(char.split(), quiz.split()))
-        mbtiDiff = percentage(4, diff)
+        mbtiDiff = self.percentage(4, diff)
 
 
         # Enneagram
@@ -207,12 +184,12 @@ class Types():
         # Big Five
 
         diff = list(difflib.Differ().compare([*gchar[2]], [*gquiz[2]]))
-        big5Diff = percentage(5, diff)
+        big5Diff = self.percentage(5, diff)
 
         return mbtiDiff, enneaDiff, big5Diff
 
 
-    def percentage(amt, diff):
+    def percentage(self, amt, diff):
         pos = amt
 
         for item in diff:

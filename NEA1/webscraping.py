@@ -79,7 +79,7 @@ def get_type_values(id):
         bigfive = BigFiveList[i]["personality_type"]
         count = BigFiveList[i]["theCount"]
         count /= votedata[6]["system_vote_count"]
-        for i in range(4):
+        for i in range(5):
             BigFiveValues[bigfive[i]] += count
     
     return MBTIvalues, EnneaValues, BigFiveValues
