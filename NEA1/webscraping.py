@@ -4,9 +4,6 @@ import databaseChars
 import data
 
 
-# store information about related characters
-# calculate information from existing data
-
 
 def find_info():
     myDb = databaseChars.Database()
@@ -31,7 +28,10 @@ def find_info():
             typedata = json.dumps(resp["breakdown_systems"])
             votedata = json.dumps(resp["systems"])
 
-            myDb.insert_character(id, name, series, image, typedata, votedata)
+            mbti = resp["breakdown_systems"]["1"][0]["personality_type"]
+            enneagram = resp["breakdown_systems"]["2"][0]["personality_type"]
+
+            myDb.insert_character(id, name, series, image, typedata, votedata, mbti, enneagram)
 
 
 def get_type_values(id):
