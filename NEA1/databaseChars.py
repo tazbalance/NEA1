@@ -1,3 +1,4 @@
+from math import fabs
 from pathlib import Path
 import sqlite3
 
@@ -13,6 +14,9 @@ class Database():
         cur = conn.cursor()
 
         query = f"DELETE FROM Characters;"
+        cur.execute(query)
+
+        query = f"DELETE FROM Types WHERE CharacterIDs;"
         cur.execute(query)
 
         conn.commit()
@@ -37,7 +41,7 @@ class Database():
             conn = sqlite3.connect(self.path)
             cur = conn.cursor()
 
-            cur.execute(f'UPDATE Types SET CharacterIDs = {IDlist} WHERE MBTI = {mbti};')
+            cur.execute(f'UPDATE Types SET CharacterIDs = "{IDlist}" WHERE MBTI = "{mbti}";')
 
             conn.commit()
 
@@ -46,16 +50,16 @@ class Database():
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        query = f'SELECT CharacterIDs FROM Types WHERE MBTI = {mbti};'
+        query = f'SELECT CharacterIDs FROM Types WHERE MBTI = "{mbti}";'
         cur.execute(query)
-        result = cur.fetchone()
+        result = cur.fetchone()[0]
 
         conn.close()
 
-        IDlist = result.split(', ')
-
         if not result:  # if list empty, return id by itself
             return id
+
+        IDlist = result.split(', ')
 
         for dbID in IDlist:  # if id in list, no change
             if dbID == id:
@@ -115,14 +119,12 @@ class Database():
 
 path = Path(__file__).with_name('NEAdatabase.db')
 conn = sqlite3.connect(path)
+
 cur = conn.cursor()
 
-MBTIvalues = ['ISFJ', 'ESFJ', 'INTP', 'ENTP',
-                'ISTJ', 'ESTJ', 'INFP', 'ENFP',
-                'INFJ', 'ENFJ', 'ISTP', 'ESTP',
-                'INTJ', 'ENTJ', 'ISFP', 'ESFP']
+query = f'SELECT CharacterIDs FROM Types WHERE MBTI = "ESTJ";'
+cur.execute(query)
+result = cur.fetchone()[0]
+print(result)
 
-for num, mbti in enumerate(MBTIvalues):
-    cur.execute(f'INSERT INTO Types (ID, MBTI) VALUES ({num}, {mbti});')
-
-conn.commit()
+conn.close()
