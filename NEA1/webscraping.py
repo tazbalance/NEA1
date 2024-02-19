@@ -31,7 +31,9 @@ def find_info():
             mbti = resp["breakdown_systems"]["1"][0]["personality_type"]
             enneagram = resp["breakdown_systems"]["2"][0]["personality_type"]
 
-            myDb.insert_character(id, name, series, image, typedata, votedata, mbti, enneagram)
+            genre = resp["subcat_link_info"]["cat_id"]
+
+            myDb.insert_character(id, name, series, image, typedata, votedata, mbti, enneagram, genre)
 
 
 def get_type_values(id):

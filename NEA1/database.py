@@ -58,29 +58,6 @@ class Database():
 
     # CHARACTERS
 
-    def create_table(self):
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-
-        cur.execute(f"""CREATE TABLE Types (
-	                    ID INTEGER,
-	                    MBTI text,
-	                    CharacterIDs text,
-	                    PRIMARY KEY(ID AUTOINCREMENT)
-                    );""")
-
-        conn.commit()
-
-
-    def add_types(self):
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-
-        cur.execute(f'INSERT INTO Types (MBTI) VALUES ("ISFJ"),("ESFJ"),("INTP"),("ENTP"),("ISTJ"),("ESTJ"),("INFP"),("ENFP"),("INFJ"),("ENFJ"),("ISTP"),("ESTP"),("INTJ"),("ENTJ"),("ISFP"),("ESFP");')
-
-        conn.commit()
-
-
     def delete_table(self):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
@@ -94,19 +71,19 @@ class Database():
         conn.commit()
 
 
-    def insert_character(self, id, name, series, image, typedata, votedata, mbti, enneagram):
+    def insert_character(self, id, name, series, image, typedata, votedata, mbti, enneagram, genre):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        cur.execute('INSERT INTO Characters (ID, Name, Series, Image, Data, VoteData, MBTI, Enneagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', (id, name, series, image, typedata, votedata, mbti, enneagram,))
+        cur.execute('INSERT INTO Characters (ID, Name, Series, Image, Data, VoteData, MBTI, Enneagram, Genre) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);', (id, name, series, image, typedata, votedata, mbti, enneagram, genre,))
 
         conn.commit()
 
         self.insert_types(id, mbti)
 
 
-    def insert_types(self, id, mbti):
-        IDlist = self.find_type(id, mbti)
+    def insert_types(self, newid, mbti):
+        IDlist = self.find_type(newid, mbti)
         
         if IDlist:
 
@@ -118,7 +95,7 @@ class Database():
             conn.commit()
 
 
-    def find_type(self, id, mbti):
+    def find_type(self, newid, mbti):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
@@ -127,8 +104,8 @@ class Database():
 
         result = cur.fetchone()
 
-        if not result:  # if list empty, return id by itself
-            return id
+        if result == None:  # if list empty, return id by itself
+            return newid
 
         conn.close()
         
@@ -136,10 +113,10 @@ class Database():
         IDlist = result.split(', ')
 
         for dbID in IDlist:  # if id in list, no change
-            if dbID == id:
+            if dbID == newid:
                 return None
         
-        result += f', {id}'  # if id not in list, add it
+        result += f', {newid}'  # if id not in list, add it
         return result
 
 
@@ -189,6 +166,3 @@ class Database():
 
         conn.close()
         return result
-
-myDb = Database()
-myDb.add_types()
