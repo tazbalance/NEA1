@@ -71,21 +71,21 @@ class Database():
         conn.commit()
 
 
-    def insert_character(self, id, name, series, image, typedata, votedata, mbti, enneagram, genre):
+    def insert_character(self, newid, name, series, image, typedata, votedata, mbti, enneagram, genre):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        cur.execute('INSERT INTO Characters (ID, Name, Series, Image, Data, VoteData, MBTI, Enneagram, Genre) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);', (id, name, series, image, typedata, votedata, mbti, enneagram, genre,))
+        cur.execute('INSERT INTO Characters (ID, Name, Series, Image, Data, VoteData, MBTI, Enneagram, Genre) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);', (newid, name, series, image, typedata, votedata, mbti, enneagram, genre,))
 
         conn.commit()
 
-        self.insert_types(id, mbti)
+        self.insert_types(newid, mbti)
 
 
     def insert_types(self, newid, mbti):
         IDlist = self.find_type(newid, mbti)
         
-        if IDlist:
+        if IDlist != None:
 
             conn = sqlite3.connect(self.path)
             cur = conn.cursor()
@@ -103,20 +103,20 @@ class Database():
         cur.execute(query)
 
         result = cur.fetchone()
-
+        conn.close()
+        print(f'1st result: {result}')
         if result == None:  # if list empty, return id by itself
             return newid
-
-        conn.close()
         
         result = result[0]
         IDlist = result.split(', ')
-
+        print(f'2nd result: {result}')
         for dbID in IDlist:  # if id in list, no change
             if dbID == newid:
                 return None
         
         result += f', {newid}'  # if id not in list, add it
+        print(f'3rd result: {result}')
         return result
 
 
