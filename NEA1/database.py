@@ -58,17 +58,27 @@ class Database():
 
     # CHARACTERS
 
+    def create_table(self):
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+
+        cur.execute(f"""CREATE TABLE Types (
+	                    ID INTEGER,
+	                    MBTI text,
+	                    CharacterIDs text,
+	                    PRIMARY KEY(ID AUTOINCREMENT)
+                    );""")
+
+        conn.commit()
+
+
     def add_types(self):
-        types = ['ISFJ', 'ESFJ', 'INTP', 'ENTP', 'ISTJ', 'ESTJ', 'INFP', 'ENFP', 'INFJ', 'ENFJ', 'ISTP', 'ESTP', 'INTJ', 'ENTJ', 'ISFP', 'ESFP']
-        
-        for i in types:
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
 
-            conn = sqlite3.connect(self.path)
-            cur = conn.cursor()
+        cur.execute(f'INSERT INTO Types (MBTI) VALUES ("ISFJ"),("ESFJ"),("INTP"),("ENTP"),("ISTJ"),("ESTJ"),("INFP"),("ENFP"),("INFJ"),("ENFJ"),("ISTP"),("ESTP"),("INTJ"),("ENTJ"),("ISFP"),("ESFP");')
 
-            cur.execute(f'INSERT INTO Types(MBTI) VALUES ("{i}")')
-
-            conn.commit()
+        conn.commit()
 
 
     def delete_table(self):
@@ -179,3 +189,6 @@ class Database():
 
         conn.close()
         return result
+
+myDb = Database()
+myDb.add_types()
