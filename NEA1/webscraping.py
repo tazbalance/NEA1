@@ -1,13 +1,13 @@
 import urllib3
 import json
-import databaseChars
+import database
 import data
 
 
 
 def find_info():
-    myDb = databaseChars.Database()
-    #myDb.delete_table()
+    myDb = database.Database()
+    myDb.delete_table()
 
     theData = data.Data()
     ids = theData.get_ids()
@@ -36,7 +36,7 @@ def find_info():
 
 def get_type_values(id):
 
-    myDb = databaseChars.Database()
+    myDb = database.Database()
 
     MBTIvalues = {'ISFJ':0, 'ESFJ':0, 'INTP':0, 'ENTP':0,
                   'ISTJ':0, 'ESTJ':0, 'INFP':0, 'ENFP':0,
@@ -108,4 +108,3 @@ def get_celebs(mbti, ennea):
             image = resp["profiles"][i]["profile_image_url"]
             info = name + '|||' + image
             celebList.add(info)
-

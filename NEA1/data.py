@@ -1,5 +1,4 @@
 import database
-import databaseChars
 
 
 class Data:
@@ -9,7 +8,6 @@ class Data:
         self.ids = [1,2,8796]
 
         self.myDb = database.Database()
-        self.myCharDb = databaseChars.Database()
         self.chars = []
         self.qNumber = 1
 
@@ -38,10 +36,10 @@ class Data:
     # =================== character database ===================
 
     def get_char_db(self):
-        return self.myCharDb
+        return self.myDb
 
     def get_character_info(self, id):
-        return self.myCharDb.get_character_info(id)
+        return self.myDb.get_character_info(id)
     
     # ================== selected characters ==================
 
