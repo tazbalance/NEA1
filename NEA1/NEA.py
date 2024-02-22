@@ -6,6 +6,11 @@ import difflib
 
 class Types():
 
+    def __init__(self):
+
+        self.myDb = database.Database()
+        self.theData = data.Data()
+
 
     def instantiate_types(self):
 
@@ -49,14 +54,11 @@ class Types():
 
     def get_types(self):
 
-        myDb = database.Database()
-        theData = data.Data()
-
-        qAmount = theData.get_amount_of_questions()
+        qAmount = self.theData.get_amount_of_questions()
         qHighest = qAmount[0]
 
         for i in range(qHighest):
-            answers = myDb.get_answers(i+1)
+            answers = self.myDb.get_answers(i+1)
 
             if answers[0][0] != '/':
                 self.MBTIfuncs[answers[0][0]] += answers[0][3]
@@ -197,45 +199,99 @@ class Types():
                 pos -= 1
 
         return f'{round(pos/amt*100)}%'
+    
 
+    def build_graph(self):
 
-"""
-List = ['1w9','1w2','2w1','2w3','3w2','3w4','4w3','4w5','5w4','5w6','6w5','6w7','7w6','7w8','8w7','8w9','9w8','9w1']
+        info = self.myDb.graph_info()
 
-for mbti in List:
-    for mbti2 in List:
-        diff = get_difference(['ISFJ', mbti, 'RLOAN'], ['ISFJ', mbti2, 'RLOAN'])
-        mbtidiff = diff[1]
-        print(f'{mbti} & {mbti2}: {mbtidiff}')
+        self.mbtiDB = {}  # eg. {'ISFJ': [1,2], 'ESFJ': [3,4],...}
+
+        for i in range(len(info)): 
+            IDlist = info[i][1]
+            if IDlist:
+                self.mbtiDB[f'{info[i][0]}'] = IDlist.split(', ')
+            else:
+                self.mbtiDB[f'{info[i][0]}'] = None
+
+        mbtiGraph = {'ISFJ': ['ESFJ', 'INTP', 'ISTJ', 'ESTJ', 'INFJ', 'ENFJ'],
+                     'ESFJ': ['ISFJ', 'ENTP', 'ISTJ', 'ESTJ', 'INFJ', 'ENFJ'],
+                     'INTP': ['ISFJ', 'ENTP', 'INFP', 'ENFP', 'ISTP', 'ESTP'],
+                     'ENTP': ['ESFJ', 'INTP', 'INFP', 'ENFP', 'ISTP', 'ESTP'],
+                     'ISTJ': ['ISFJ', 'ESFJ', 'ESTJ', 'INFP', 'INTJ', 'ENTJ'],
+                     'ESTJ': ['ISFJ', 'ESFJ', 'ISTJ', 'ENFP', 'INTJ', 'ENTJ'],
+                     'INFP': ['INTP', 'ENTP', 'ISTJ', 'ENFP', 'ISFP', 'ESFP'],
+                     'ENFP': ['INTP', 'ENTP', 'ESTJ', 'INFP', 'ISFP', 'ESFP'],
+                     'INFJ': ['ISFJ', 'ESFJ', 'ENFJ', 'ISTP', 'INTJ', 'ENTJ'],
+                     'ENFJ': ['ISFJ', 'ESFJ', 'INFJ', 'ESTP', 'INTJ', 'ENTJ'],
+                     'ISTP': ['INTP', 'ENTP', 'INFJ', 'ESTP', 'ISFP', 'ESFP'],
+                     'ESTP': ['INTP', 'ENTP', 'ENFJ', 'ISTP', 'ISFP', 'ESFP'],
+                     'INTJ': ['ISTJ', 'ESTJ', 'INFJ', 'ENFJ', 'ENTJ', 'ISFP'],
+                     'ENTJ': ['ISTJ', 'ESTJ', 'INFJ', 'ENFJ', 'INTJ', 'ESFP'],
+                     'ISFP': ['INFP', 'ENFP', 'ISTP', 'ESTP', 'INTJ', 'ESFP'],
+                     'ESFP': ['INFP', 'ENFP', 'ISTP', 'ESTP', 'ENTJ', 'ISFP']}
         
-for mbti in List:
-    highest = []
-    for mbti2 in List:
-        diff = get_difference(['ISFJ', mbti, 'RLOAN'], ['ISFJ', mbti2, 'RLOAN'])
-        mbtidiff = diff[1]
-        if mbtidiff >= 85:
-            highest.append(mbti2)
-    print(highest)
+        removeNodes = []
+        removeEdges = []
+
+        for node, edges in mbtiGraph.items():
+            if not self.mbtiDB[node]:
+                removeNodes.append(node)
+            else:
+                for edge in edges:
+                    if not self.mbtiDB[edge]:
+                        removeEdges.append([node,edge])
+
+        for node in removeNodes:
+            mbtiGraph.pop(node)
+
+        for node, edge in removeEdges:
+            mbtiGraph[node].remove(edge)
+
+        return mbtiGraph
+    
+
+    def find_path(self, startNode, endNode):
+        mbtiGraph = self.build_graph()
+        explored = []
+        queue = [[startNode]]
+
+        while queue:
+            path = queue.pop(0)
+            node = path[-1]
+
+            if node not in explored:
+                neighbours = mbtiGraph[node]
+
+                for neighbour in neighbours:
+                    new_path = list(path)
+                    new_path.append(neighbour)
+                    queue.append(new_path)
+
+                    if neighbour == endNode:
+                        middle = round((len(new_path)-1)/2+0.1)
+                        return new_path[middle]
+                    
+                explored.append(node)
+
+
+    def find_characters(self, start, end):
+        middletype = self.find_path(start, end)
+        print(self.mbtiDB[middletype])  # this prints character ids that are the type
+
+        # add these characters to list so that they can show up in results (interface)
+        # make it so it chooses characters from same genre first, then other genres
+        # try to use multi-database search
+
+            
+if __name__ == "__main__":
+    typeos = Types()
+    #print(typeos.build_graph())
+    typeos.find_characters('INTP','ENTP')
+
+
+
 """
-
-
-mbtiGraph = {'ISFJ': ['ESFJ', 'INTP', 'ISTJ', 'ESTJ', 'INFJ', 'ENFJ'],
-             'ESFJ': ['ISFJ', 'ENTP', 'ISTJ', 'ESTJ', 'INFJ', 'ENFJ'],
-             'INTP': ['ISFJ', 'ENTP', 'INFP', 'ENFP', 'ISTP', 'ESTP'],
-             'ENTP': ['ESFJ', 'INTP', 'INFP', 'ENFP', 'ISTP', 'ESTP'],
-             'ISTJ': ['ISFJ', 'ESFJ', 'ESTJ', 'INFP', 'INTJ', 'ENTJ'],
-             'ESTJ': ['ISFJ', 'ESFJ', 'ISTJ', 'ENFP', 'INTJ', 'ENTJ'],
-             'INFP': ['INTP', 'ENTP', 'ISTJ', 'ENFP', 'ISFP', 'ESFP'],
-             'ENFP': ['INTP', 'ENTP', 'ESTJ', 'INFP', 'ISFP', 'ESFP'],
-             'INFJ': ['ISFJ', 'ESFJ', 'ENFJ', 'ISTP', 'INTJ', 'ENTJ'],
-             'ENFJ': ['ISFJ', 'ESFJ', 'INFJ', 'ESTP', 'INTJ', 'ENTJ'],
-             'ISTP': ['INTP', 'ENTP', 'INFJ', 'ESTP', 'ISFP', 'ESFP'],
-             'ESTP': ['INTP', 'ENTP', 'ENFJ', 'ISTP', 'ISFP', 'ESFP'],
-             'INTJ': ['ISTJ', 'ESTJ', 'INFJ', 'ENFJ', 'ENTJ', 'ISFP'],
-             'ENTJ': ['ISTJ', 'ESTJ', 'INFJ', 'ENFJ', 'INTJ', 'ESFP'],
-             'ISFP': ['INFP', 'ENFP', 'ISTP', 'ESTP', 'INTJ', 'ESFP'],
-             'ESFP': ['INFP', 'ENFP', 'ISTP', 'ESTP', 'ENTJ', 'ISFP']}
-
 enneaGraph = {'1w9': ['9w1','1w2','2w1'],
               '1w2': ['9w1','1w9','2w1'],
               '2w1': ['1w2','2w3','3w2'],
@@ -253,45 +309,4 @@ enneaGraph = {'1w9': ['9w1','1w2','2w1'],
               '8w7': ['7w8','8w9','9w8'],
               '8w9': ['7w8','8w7','9w8'],
               '9w8': ['8w9','9w1','1w9'],
-              '9w1': ['8w9','9w8','1w9']}
-
-"""
-def BFS_SP(graph, start, goal):
-    explored = []
-     
-    # Queue for traversing the 
-    # graph in the BFS
-    queue = [[start]]
-     
-    # If the desired node is 
-    # reached
-    if start == goal:
-        print("Same Node")
-        return
-     
-    # Loop to traverse the graph 
-    # with the help of the queue
-    while queue:
-        path = queue.pop(0)
-        node = path[-1]
-         
-        # Condition to check if the
-        # current node is not visited
-        if node not in explored:
-            neighbours = graph[node]
-             
-            # Loop to iterate over the 
-            # neighbours of the node
-            for neighbour in neighbours:
-                new_path = list(path)
-                new_path.append(neighbour)
-                queue.append(new_path)
-                 
-                # Condition to check if the 
-                # neighbour node is the goal
-                if neighbour == goal:
-                    print("Shortest path = ", *new_path)
-                    return
-            explored.append(node)
-
-BFS_SP(mbtiGraph, 'ISFJ', 'ISFP')"""
+              '9w1': ['8w9','9w8','1w9']}"""

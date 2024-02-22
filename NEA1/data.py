@@ -5,7 +5,7 @@ class Data:
 
     def __init__(self):
 
-        self.ids = [1,2,3,8796]
+        self.ids = [1,2,3,4]
 
         self.myDb = database.Database()
         self.chars = []

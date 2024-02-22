@@ -65,27 +65,27 @@ class Database():
         query = f"DELETE FROM Characters;"
         cur.execute(query)
 
-        query = f"DELETE FROM Types WHERE CharacterIDs;"
+        query = f"UPDATE Types SET CharacterIDs = NULL;"
         cur.execute(query)
 
         conn.commit()
 
 
-    def insert_character(self, newid, name, series, image, typedata, votedata, mbti, enneagram, genre):
+    def insert_character(self, id, name, series, image, typedata, votedata, mbti, enneagram, genre):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
-        cur.execute('INSERT INTO Characters (ID, Name, Series, Image, Data, VoteData, MBTI, Enneagram, Genre) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);', (newid, name, series, image, typedata, votedata, mbti, enneagram, genre,))
+        cur.execute('INSERT INTO Characters (ID, Name, Series, Image, Data, VoteData, MBTI, Enneagram, Genre) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);', (id, name, series, image, typedata, votedata, mbti, enneagram, genre,))
 
         conn.commit()
 
-        self.insert_types(newid, mbti)
+        self.insert_types(id, mbti)
 
 
-    def insert_types(self, newid, mbti):
-        IDlist = self.find_type(newid, mbti)
+    def insert_types(self, id, mbti):
+        IDlist = self.find_type(id, mbti)
         
-        if IDlist != None:
+        if IDlist:
 
             conn = sqlite3.connect(self.path)
             cur = conn.cursor()
@@ -95,7 +95,7 @@ class Database():
             conn.commit()
 
 
-    def find_type(self, newid, mbti):
+    def find_type(self, id, mbti):
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
@@ -103,21 +103,33 @@ class Database():
         cur.execute(query)
 
         result = cur.fetchone()
-        conn.close()
-        print(f'1st result: {result}')
-        if result == None:  # if list empty, return id by itself
-            return newid
-        
         result = result[0]
-        IDlist = result.split(', ')
-        print(f'2nd result: {result}')
-        for dbID in IDlist:  # if id in list, no change
-            if dbID == newid:
-                return None
+
+        conn.close()
+
+        if result == None:  # if list empty, return id by itself
+            return id
         
-        result += f', {newid}'  # if id not in list, add it
-        print(f'3rd result: {result}')
+        IDlist = result.split(', ')
+
+        for dbID in IDlist:  # if id in list, no change
+            if dbID == id:
+                return None
+
+        result += f', {id}'  # if id not in list, add it
         return result
+
+
+    def graph_info(self):
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+
+        query = f'SELECT MBTI, CharacterIDs FROM Types;'
+        cur.execute(query)
+        results = cur.fetchall()
+
+        conn.close()
+        return results
 
 
     def get_character_info(self, id):

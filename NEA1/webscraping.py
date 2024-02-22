@@ -4,10 +4,9 @@ import database
 import data
 
 
-
 def find_info():
     myDb = database.Database()
-    myDb.delete_table()
+    #myDb.delete_table()
 
     theData = data.Data()
     ids = theData.get_ids()
