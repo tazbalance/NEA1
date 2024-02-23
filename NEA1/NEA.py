@@ -209,7 +209,7 @@ class Types():
 
         for i in range(len(info)): 
             IDlist = info[i][1]
-            if IDlist:
+            if IDlist: # if there is information for this type
                 self.mbtiDB[f'{info[i][0]}'] = IDlist.split(', ')
             else:
                 self.mbtiDB[f'{info[i][0]}'] = None
@@ -234,6 +234,7 @@ class Types():
         removeNodes = []
         removeEdges = []
 
+        # remove nodes that there is no information for
         for node, edges in mbtiGraph.items():
             if not self.mbtiDB[node]:
                 removeNodes.append(node)
@@ -248,6 +249,7 @@ class Types():
         for node, edge in removeEdges:
             mbtiGraph[node].remove(edge)
 
+        print(mbtiGraph)
         return mbtiGraph
     
 
