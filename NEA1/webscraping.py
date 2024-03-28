@@ -84,28 +84,3 @@ def get_type_values(id):
             BigFiveValues[bigfive[i]] += count
     
     return MBTIvalues, EnneaValues, BigFiveValues
-
-
-def get_celebs(mbti, ennea):
-    celebNumber = 0
-    celebList = set({})
-
-    url = 'https://api.personality-database.com/api/v1/profiles?offset=0&limit=100&cid=1&pid=1&sort=top&cat_id=1&property_id=1'
-    http = urllib3.PoolManager()
-    resp = http.request('GET', url)
-    resp = json.loads(resp.data)
-    
-    for i in range(len(resp["profiles"])):
-        celebType = resp["profiles"][i]["personality_type"]
-        celebMBTI = celebType.split()[0]
-        celebEnnea = celebType.split()[1]
-
-        if celebMBTI == mbti or celebEnnea[0] == ennea[0]:
-            celebNumber += 1
-            if celebNumber > 2:
-                return celebList
-
-            name = resp["profiles"][i]["mbti_profile"]
-            image = resp["profiles"][i]["profile_image_url"]
-            info = name + '|||' + image
-            celebList.add(info)

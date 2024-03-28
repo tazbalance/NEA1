@@ -201,6 +201,14 @@ class Types():
         return f'{round(pos/amt*100)}%'
     
 
+
+class Graph():
+
+    def __init__(self):
+        
+        self.myDb = database.Database()
+        self.theData = data.Data()
+
     def build_graph(self):
 
         info = self.myDb.graph_info()
@@ -249,11 +257,12 @@ class Types():
         for node, edge in removeEdges:
             mbtiGraph[node].remove(edge)
 
-        print(mbtiGraph)
+        #print(mbtiGraph)
         return mbtiGraph
     
 
     def find_path(self, startNode, endNode):
+        
         mbtiGraph = self.build_graph()
         explored = []
         queue = [[startNode]]
@@ -262,7 +271,7 @@ class Types():
             path = queue.pop(0)
             node = path[-1]
 
-            if node not in explored:
+            if node not in explored and node in mbtiGraph:
                 neighbours = mbtiGraph[node]
 
                 for neighbour in neighbours:
@@ -271,25 +280,25 @@ class Types():
                     queue.append(new_path)
 
                     if neighbour == endNode:
-                        middle = round((len(new_path)-1)/2+0.1)
-                        return new_path[middle]
+                        return new_path
                     
                 explored.append(node)
 
+            else:
+                return [startNode, endNode]
+
 
     def find_characters(self, start, end):
-        middletype = self.find_path(start, end)
-        print(self.mbtiDB[middletype])  # this prints character ids that are the type
+        
+        IDlist = []
+        types = self.find_path(start, end)
 
-        # add these characters to list so that they can show up in results (interface)
-        # make it so it chooses characters from same genre first, then other genres
-        # try to use multi-database search
+        for type in types:
+            if self.mbtiDB[type]:
+                IDlist += self.mbtiDB[type]
 
-            
-if __name__ == "__main__":
-    typeos = Types()
-    #print(typeos.build_graph())
-    typeos.find_characters('INTP','ENTP')
+        return IDlist  # this gives character ids that are the type
+
 
 
 

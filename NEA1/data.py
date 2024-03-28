@@ -41,6 +41,9 @@ class Data:
     def get_character_info(self, id):
         return self.myDb.get_character_info(id)
     
+    def get_character_genre(self, id):
+        return self.myDb.get_character_genre(id)
+    
     # ================== selected characters ==================
 
     def get_chars(self):
@@ -66,6 +69,3 @@ class Data:
     def decrease_qnumber(self):
         self.qNumber -= 1
         return self.qNumber
-
-
-
